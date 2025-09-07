@@ -3,13 +3,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from 'src/services/auth/auth.service';
 import { UserService } from 'src/services/user/user.service';
-
+import { randomBytes } from 'crypto';  // Node's crypto lib
 
 @Module({
     imports: [
     PassportModule,
     JwtModule.register({
-      secret: 'myS3cr3tK3y!_2025_random_value_@#$', // move to .env in production
+      secret: randomBytes(32).toString('hex'), // 32 random bytes -> hex string
       signOptions: { expiresIn: '1h' },
     }),
   ],
