@@ -4,6 +4,8 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from 'src/services/auth/auth.service';
 import { UserService } from 'src/services/user/user.service';
 import { randomBytes } from 'crypto';  // Node's crypto lib
+import { UserModule } from 'src/modules/user/user.module';
+import { User } from 'src/models/user.entity';
 
 @Module({
     imports: [
@@ -12,8 +14,9 @@ import { randomBytes } from 'crypto';  // Node's crypto lib
       secret: randomBytes(32).toString('hex'), // 32 random bytes -> hex string
       signOptions: { expiresIn: '1h' },
     }),
+    UserModule
   ],
-  providers: [AuthService, UserService],
+  providers: [AuthService],
   exports: [AuthService],
 })
 export class AuthModule {}

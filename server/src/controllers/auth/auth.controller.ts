@@ -7,15 +7,18 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  register(@Body() credentials: UserCredentialsDto) {
-    const user = this.authService.register(credentials.username, credentials.password);
+  async register(@Body() credentials: UserCredentialsDto) {
+    const user = await this.authService.register(
+      credentials.username, 
+      credentials.name, 
+      credentials.password);
     if (!user) return { message: 'User already exists' };
     return { message: 'Registered', user };
   }
 
   @Post('login')
-  login(@Body() credentials: UserCredentialsDto) {
-    const result = this.authService.login(credentials.username, credentials.password);
+  async login(@Body() credentials: UserCredentialsDto) {
+    const result = await this.authService.login(credentials.username, credentials.password);
     if (!result) return { message: 'Invalid credentials' };
     return result;
   }

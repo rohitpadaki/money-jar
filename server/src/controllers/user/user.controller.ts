@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import type { User } from 'src/models/user.model';
+import type { User } from 'src/models/user.entity';
 import { UserService } from 'src/services/user/user.service';
+import { PublicUserDto } from './dto/public-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -25,5 +26,13 @@ export class UserController {
     @Delete(":id")
     deleteUser(@Param("id") userId){
         return this.userService.deleteUser(userId);
+    }
+
+    @Get(":username")
+    async findUser(@Param("username") username:string){
+        let user = await this.userService.findByUsername(username);
+        if(!user) return { message: 'User does not exist' };
+
+        return new PublicUserDto(user);
     }
 }

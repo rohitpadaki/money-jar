@@ -1,46 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/models/user.model';
+import { User } from 'src/models/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
-    private usersList: User[] = [];
+    constructor(
+        @InjectRepository(User) private userRepo: Repository<User>,
+    ) { }
 
-    getUsers() {
-        return this.usersList;
+    async getUsers(): Promise<User[]> {
+        return this.userRepo.find();
     }
 
-    addUser(newUser: User) {
-        // Only prevent duplicate usernames
-        const exists = this.usersList.some(user => user.username === newUser.username);
-        if (exists) {
-            return null;
-        }
-        this.usersList.push(newUser);
-        return newUser;
+    async addUser(newUser: Partial<User>): Promise<User> {
+        const user = this.userRepo.create(newUser); // creates entity instance
+        return this.userRepo.save(user);            // inserts into DB
+
     }
 
-    updateUser(userId: number, user: User) {
-        const existingUser = this.usersList.find(user => user.id === userId);
-        if (existingUser) {
-            existingUser.name = user.name;
-            existingUser.username = user.username;
-        }
+    async updateUser(userId: number, user: Partial<User>): Promise<User | null> {
+        await this.userRepo.update(userId, user);
+        return this.userRepo.findOneBy({ id: userId });
     }
 
-    deleteUser(userId: number) {
-        this.usersList = this.usersList.filter(user => user.id !== userId);
+    async deleteUser(userId: number): Promise<void> {
+        await this.userRepo.delete(userId);
     }
 
-    findByUsername(username: string): User | undefined {
-        return this.usersList.find(user => user.username === username);
+    async findByUsername(username: string): Promise<User | null> {
+        return this.userRepo.findOneBy({ username });
     }
 
 
-    validateUser(username: string, password: string): User | null {
-        const user = this.findByUsername(username);
-        if (user && (user as any).password === password) {
+    async validateUser(username: string, password: string): Promise<User | null> {
+        const user = await this.userRepo.findOne({ where: { username } });
+
+        if (user && user.password === password) {
             return user;
         }
+
         return null;
     }
+
 }
