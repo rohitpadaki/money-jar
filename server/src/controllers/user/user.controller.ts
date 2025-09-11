@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Que
 import type { User } from 'src/models/user.entity';
 import { UserService } from 'src/services/user/user.service';
 import { PublicUserDto } from './dto/public-user.dto';
+import { PrivateUserDto } from './dto/private-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -14,7 +15,7 @@ export class UserController {
     }
 
     @Post()
-    async addUser(@Body() user: User){
+    async addUser(@Body() user: PrivateUserDto){
         return await this.userService.addUser(user);
     }
 
