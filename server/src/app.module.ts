@@ -10,16 +10,19 @@ import { JwtService } from '@nestjs/jwt';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './models/user.entity';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 
 @Module({
   imports: [AuthModule, UserModule, 
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',    // change if your DB is running in Docker/remote
-      port: 5432,
-      username: 'postgres', // your postgres username
-      password: 'root', // your postgres password
-      database: 'moneyjar', // database name
+      host: process.env.DB_HOST,    // change if your DB is running in Docker/remote
+      port: parseInt(String(process.env.DB_PORT)),
+      username: process.env.DB_USERNAME, // your postgres username
+      password: process.env.DB_PASSWORD, // your postgres password
+      database: process.env.DB_NAME, // database name
       entities: [User],     // register your entity here
       autoLoadEntities: true, 
       synchronize: true,    // auto create tables (disable in production!)
