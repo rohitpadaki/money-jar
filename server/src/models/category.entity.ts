@@ -1,6 +1,7 @@
 // src/category/category.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
+import { Transaction } from './transaction.entity';
 
 @Entity()
 export class Category {
@@ -14,6 +15,6 @@ export class Category {
   @Column()
   type: string;
 
-  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  user: User;
+  @OneToMany(() => Transaction, (transaction) => transaction.category)
+  transactions: Transaction[];
 }

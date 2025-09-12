@@ -14,9 +14,9 @@ import { User } from 'src/models/user.entity';
       secret: randomBytes(32).toString('hex'), // 32 random bytes -> hex string
       signOptions: { expiresIn: '1h' },
     }),
-    UserModule
+    UserModule,
   ],
   providers: [AuthService],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

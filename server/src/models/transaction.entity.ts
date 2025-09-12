@@ -23,6 +23,10 @@ export class Transaction {
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Category, (category) => category.id, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => Category, (category) => category.transactions, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   category: Category;
+
 }
