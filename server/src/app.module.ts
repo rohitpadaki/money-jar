@@ -20,10 +20,15 @@ import { CategoryModule } from './modules/category/category.module';
 import { TransactionService } from './services/transaction/transaction.service';
 import { TransactionController } from './controllers/transaction/transaction.controller';
 import { TransactionModule } from './modules/transaction/transaction.module';
+import { ConfigModule } from '@nestjs/config';
+
 
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // makes config available app-wide
+    }),
     AuthModule,
     UserModule, 
     CategoryModule,
