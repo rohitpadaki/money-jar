@@ -17,10 +17,17 @@ import { CategoryController } from './controllers/category/category.controller';
 import { CategoryService } from './services/category/category.service';
 dotenv.config();
 import { CategoryModule } from './modules/category/category.module';
+import { TransactionService } from './services/transaction/transaction.service';
+import { TransactionController } from './controllers/transaction/transaction.controller';
+import { TransactionModule } from './modules/transaction/transaction.module';
 
 
 @Module({
-  imports: [AuthModule, UserModule, 
+  imports: [
+    AuthModule,
+    UserModule, 
+    CategoryModule,
+    TransactionModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,    // change if your DB is running in Docker/remote
@@ -32,9 +39,8 @@ import { CategoryModule } from './modules/category/category.module';
       autoLoadEntities: true, 
       synchronize: true,    // auto create tables (disable in production!)
     }),
-    CategoryModule
   ],
-  controllers: [AppController, UserController, AuthController, CategoryController],
-  providers: [AppService, CategoryService],
+  controllers: [AppController, UserController, AuthController, CategoryController, TransactionController],
+  providers: [AppService, CategoryService, TransactionService],
 })
 export class AppModule {}

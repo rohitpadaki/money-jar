@@ -1,5 +1,5 @@
 // src/category/category.controller.ts
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, NotFoundException } from '@nestjs/common';
 import { CategoryService } from '../../services/category/category.service';
 import { Category } from '../../models/category.entity';
 
@@ -14,7 +14,10 @@ export class CategoryController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Category | null> {
-    return await this.categoryService.findOne(+id);
+    let category = await this.categoryService.findOne(+id);
+    if (!category) throw new NotFoundException('Category does not exist');
+
+    return category;
   }
 
   @Post()
