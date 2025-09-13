@@ -2,6 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 import { Category } from './category.entity';
+import { TransactionType } from 'src/enums/transaction-type.enum';
 
 @Entity()
 export class Transaction {
@@ -11,8 +12,11 @@ export class Transaction {
   @Column('decimal')
   amount: number;
 
-  @Column()
-  type: string; // "expense" or "income"
+  @Column({
+    type: 'enum',
+    enum: TransactionType,
+  })
+  type: TransactionType;
 
   @Column({ nullable: true })
   note: string;
