@@ -1,5 +1,5 @@
 // src/transaction/transaction.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Category } from './category.entity';
 import { TransactionType } from 'src/enums/transaction-type.enum';
@@ -31,6 +31,7 @@ export class Transaction {
     nullable: true,
     onDelete: 'SET NULL',
   })
+  @JoinColumn({ name: 'categoryId' }) // <-- Add this line
   category: Category;
 
 }

@@ -44,4 +44,9 @@ export class TransactionService {
     const transaction = await this.findOneByUser(id, userId);
     await this.transactionRepo.remove(transaction);
   }
+
+  async updateTransaction(id: number, userId: number, transaction: Partial<Transaction>): Promise<Transaction | null> {
+    await this.transactionRepo.update(id, transaction);
+    return this.findOneByUser(id, userId);
+  }
 }
