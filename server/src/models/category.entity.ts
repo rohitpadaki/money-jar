@@ -2,6 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
 import { Transaction } from './transaction.entity';
+import { TransactionType } from 'src/enums/transaction-type.enum';
 
 @Entity()
 export class Category {
@@ -11,9 +12,12 @@ export class Category {
   @Column()
   name: string;
 
-  // "expense" or "income" – keep it simple as text for now
-  @Column()
-  type: string;
+  
+  @Column({
+    type: 'enum',
+    enum: TransactionType,
+  })
+  type: TransactionType;
 
   @OneToMany(() => Transaction, (transaction) => transaction.category)
   transactions: Transaction[];
