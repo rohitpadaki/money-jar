@@ -6,17 +6,21 @@ import { UserService } from 'src/services/user/user.service';
 import { randomBytes } from 'crypto';  // Node's crypto lib
 import { UserModule } from 'src/modules/user/user.module';
 import { User } from 'src/models/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-    imports: [
+  imports: [
     PassportModule,
-    JwtModule.register({
-      secret: randomBytes(32).toString('hex'), // 32 random bytes -> hex string
-      signOptions: { expiresIn: '1h' },
+    UserModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService], // ✅ This line is required
+      useFactory: async (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
     }),
-    UserModule
   ],
   providers: [AuthService],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
-export class AuthModule {}
+export class AuthModule { }
