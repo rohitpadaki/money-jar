@@ -24,7 +24,14 @@ import { ConfigModule } from '@nestjs/config';
 import { TransactionSummaryService } from './services/transaction-summary/transaction-summary.service';
 import { TransactionSummaryController } from './controllers/transaction-summary/transaction-summary.controller';
 import { TransactionSummaryModule } from './modules/transaction-summary/transaction-summary.module';
-
+import { Group } from './models/group.entity';
+import { GroupMember } from './models/group-member.entity';
+import { GroupsService } from './services/group/group.service';
+import { GroupsController } from './controllers/group/group.controller';
+import { GroupsModule } from './modules/group/group.module';
+import { GroupMembersModule } from './modules/group-member/group-member.module';
+import { GroupMembersService } from './services/group-member/group-member.service';
+import { GroupMembersController } from './controllers/group-member/group-member.controller';
 
 
 @Module({
@@ -43,13 +50,15 @@ import { TransactionSummaryModule } from './modules/transaction-summary/transact
       username: process.env.DB_USERNAME, // your postgres username
       password: process.env.DB_PASSWORD, // your postgres password
       database: process.env.DB_NAME, // database name
-      entities: [User, Transaction, Category],     // register your entity here
+      entities: [User, Transaction, Category, Group, GroupMember],     // register your entity here
       autoLoadEntities: true, 
       synchronize: true,    // auto create tables (disable in production!)
     }),
     TransactionSummaryModule,
+    GroupsModule,
+    GroupMembersModule,
   ],
-  controllers: [AppController, UserController, AuthController, CategoryController, TransactionController, TransactionSummaryController],
-  providers: [AppService, CategoryService, TransactionService, TransactionSummaryService],
+  controllers: [AppController, UserController, AuthController, CategoryController, TransactionController, TransactionSummaryController, GroupsController, GroupMembersController],
+  providers: [AppService, CategoryService, TransactionService, TransactionSummaryService, GroupsService, GroupMembersService],
 })
 export class AppModule {}
