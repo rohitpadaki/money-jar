@@ -12,12 +12,12 @@ export class GroupsController {
     @Post()
     async createGroup(@Body() CreateGroupDto: CreateGroupDto, @Req() req) {
         // req.user comes from JwtStrategy validate() return
-        return this.groupsService.createGroup(Number(req.user.sub), CreateGroupDto.name);
+        return this.groupsService.createGroup(req.user.sub, CreateGroupDto.name);
     }
 
     @Get('my')
     async myGroups(@Req() req) {
-        return this.groupsService.getUserGroups(Number(req.user.sub));
+        return this.groupsService.getUserGroups(req.user.sub);
     }
 
     @Get(':groupId')

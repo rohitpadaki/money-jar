@@ -12,7 +12,7 @@ export class TransactionSummaryService {
         private readonly transactionRepo: Repository<Transaction>,
     ) { }
 
-    async getTotalBalance(userId: number) {
+    async getTotalBalance(userId: string) {
         const { total } = await this.transactionRepo
             .createQueryBuilder('transaction')
             .select('SUM(CASE WHEN transaction.type = :income THEN transaction.amount ELSE -transaction.amount END)', 'total')
@@ -22,7 +22,7 @@ export class TransactionSummaryService {
         return { balance: total || 0 };
     }
 
-    async getTotalByType(userId: number) {
+    async getTotalByType(userId: string) {
         return this.transactionRepo
             .createQueryBuilder('transaction')
             .select('transaction.type', 'type')
@@ -32,7 +32,7 @@ export class TransactionSummaryService {
             .getRawMany();
     }
 
-    async getTotalByCategory(userId: number) {
+    async getTotalByCategory(userId: string) {
         return this.transactionRepo
             .createQueryBuilder('transaction')
             .leftJoin('transaction.category', 'category')
@@ -43,7 +43,7 @@ export class TransactionSummaryService {
             .getRawMany();
     }
 
-    async getMonthlySummary(userId: number) {
+    async getMonthlySummary(userId: string) {
         console.log('Debug: userId passed to summary query ->', userId);
         const rows = await this.transactionRepo
             .createQueryBuilder('t')
@@ -73,7 +73,7 @@ export class TransactionSummaryService {
     }
 
 
-    async getWeeklySummary(userId: number) {
+    async getWeeklySummary(userId: string) {
         const rows = await this.transactionRepo
             .createQueryBuilder('t')
             // IYYY-IW gives ISO year-week like "2025-37"
@@ -102,7 +102,7 @@ export class TransactionSummaryService {
         }));
     }
 
-    async getExpensesByCategory(userId: number) {
+    async getExpensesByCategory(userId: string) {
         const rows = await this.transactionRepo
             .createQueryBuilder('t')
             .leftJoin('t.category', 'c')
@@ -120,7 +120,7 @@ export class TransactionSummaryService {
         }));
     }
 
-    async getIncomesByCategory(userId: number) {
+    async getIncomesByCategory(userId: string) {
         const rows = await this.transactionRepo
             .createQueryBuilder('t')
             .leftJoin('t.category', 'c')

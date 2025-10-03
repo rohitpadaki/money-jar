@@ -15,7 +15,7 @@ export class GroupsService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) { }
 
-  async createGroup(userId: number, name: string) {
+  async createGroup(userId: string, name: string) {
     return this.dataSource.transaction(async (manager) => {
       // find the creator user (must exist)
       const user = await manager.findOne(User, { where: { id: userId } });
@@ -39,7 +39,7 @@ export class GroupsService {
     });
   }
 
-  async getUserGroups(userId: number) {
+  async getUserGroups(userId: string) {
     const memberships = await this.memberRepo.find({
       where: { user: { id: userId } },
       relations: ['group', 'group.createdBy', 'group.members'],

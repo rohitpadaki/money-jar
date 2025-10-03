@@ -10,12 +10,12 @@ export class GroupMembersController {
 
   @Post(':groupId/add')
   addMember(@Param('groupId') groupId: string, @Body() addMemberDto: AddMemberDto, @Req() req) {
-    return this.groupMembersService.addMember(groupId, addMemberDto.userId, Number(req.user.sub));
+    return this.groupMembersService.addMember(groupId, addMemberDto.userId, req.user.sub);
   }
 
   @Delete(':groupId/remove/:userId')
-  removeMember(@Param('groupId') groupId: string, @Param('userId') userId: number, @Req() req) {
-    return this.groupMembersService.removeMember(groupId, userId, Number(req.user.sub));
+  removeMember(@Param('groupId') groupId: string, @Param('userId') userId: string, @Req() req) {
+    return this.groupMembersService.removeMember(groupId, userId, req.user.sub);
   }
 
   @Get(':groupId')
@@ -25,6 +25,6 @@ export class GroupMembersController {
 
   @Delete(':groupId/leave')
   leaveGroup(@Param('groupId') groupId: string, @Req() req) {
-    return this.groupMembersService.leaveGroup(groupId, Number(req.user.sub));
+    return this.groupMembersService.leaveGroup(groupId, req.user.sub);
   }
 }

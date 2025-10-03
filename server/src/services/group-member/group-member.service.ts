@@ -13,7 +13,7 @@ export class GroupMembersService {
         @InjectRepository(User) private userRepo: Repository<User>,
     ) { }
 
-    async addMember(groupId: string, userId: number, requesterId: number) {
+    async addMember(groupId: string, userId: string, requesterId: string) {
         const group = await this.groupRepo.findOne({
             where: { id: groupId },
             relations: ['createdBy'],
@@ -31,7 +31,7 @@ export class GroupMembersService {
         return this.groupMemberRepo.save(member);
     }
 
-    async removeMember(groupId: string, userId: number, requesterId: number) {
+    async removeMember(groupId: string, userId: string, requesterId: string) {
         const group = await this.groupRepo.findOne({
             where: { id: groupId },
             relations: ['createdBy'],
@@ -53,7 +53,7 @@ export class GroupMembersService {
         });
     }
 
-    async leaveGroup(groupId: string, userId: number) {
+    async leaveGroup(groupId: string, userId: string) {
         const group = await this.groupRepo.findOne({
             where: { id: groupId },
             relations: ['createdBy'], // 👈 ensure we can access createdBy.id

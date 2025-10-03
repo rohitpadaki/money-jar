@@ -12,5 +12,5 @@ export class UpdateTransactionDto {
   @IsString()
   note?: string;
 
-  categoryId?: number;
+  categoryId?: string;
 }

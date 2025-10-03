@@ -20,7 +20,7 @@ export class UserController {
     }
 
     @Put(":id")
-    async updateUser(@Param("id") userId: number, @Body() user: PrivateUserDto){
+    async updateUser(@Param("id") userId: string, @Body() user: PrivateUserDto){
         return await this.userService.updateUser(userId, user);
     }
 

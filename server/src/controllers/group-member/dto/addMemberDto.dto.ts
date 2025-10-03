@@ -1,3 +1,3 @@
 export class AddMemberDto {
-  userId: number;
+  userId: string;
 }
