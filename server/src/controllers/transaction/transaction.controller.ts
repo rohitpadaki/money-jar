@@ -18,7 +18,7 @@ export class TransactionController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Request() req): Promise<Transaction> {
-    return this.transactionService.findOneByUser(+id, req.user.sub);
+    return this.transactionService.findOneByUser(id, req.user.sub);
   }
 
   @Post()
@@ -28,13 +28,13 @@ export class TransactionController {
 
   @Delete(':id')
   async remove(@Param('id') id: string, @Request() req): Promise<void> {
-    return this.transactionService.remove(+id, req.user.sub);
+    return this.transactionService.remove(id, req.user.sub);
   }
 
   @Put(":id")
   async update(@Param('id') id: string,
    @Request() req,
    @Body() dto: UpdateTransactionDto) {
-    return await this.transactionService.updateTransaction(+id, req.user.sub, dto);
+    return await this.transactionService.updateTransaction(id, req.user.sub, dto);
   }
 }

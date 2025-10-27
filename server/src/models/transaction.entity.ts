@@ -6,8 +6,8 @@ import { TransactionType } from 'src/enums/transaction-type.enum';
 
 @Entity()
 export class Transaction {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('decimal')
   amount: number;

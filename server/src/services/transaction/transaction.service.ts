@@ -12,7 +12,7 @@ export class TransactionService {
     private transactionRepo: Repository<Transaction>,
   ) {}
 
-  async findAllByUser(userId: number): Promise<Transaction[]> {
+  async findAllByUser(userId: string): Promise<Transaction[]> {
     return this.transactionRepo.find({
       where: { user: { id: userId } },
       relations: ['category', 'user'],
@@ -20,7 +20,7 @@ export class TransactionService {
     });
   }
 
-  async findOneByUser(id: number, userId: number): Promise<Transaction> {
+  async findOneByUser(id: string, userId: string): Promise<Transaction> {
     const transaction = await this.transactionRepo.findOne({
       where: { id, user: { id: userId } },
       relations: ['category', 'user'],
@@ -29,7 +29,7 @@ export class TransactionService {
     return transaction;
   }
 
-  async create(userId: number, dto: CreateTransactionDto): Promise<Transaction> {
+  async create(userId: string, dto: CreateTransactionDto): Promise<Transaction> {
     const transaction = this.transactionRepo.create({
       amount: dto.amount,
       type: dto.type,
@@ -40,12 +40,12 @@ export class TransactionService {
     return this.transactionRepo.save(transaction);
   }
 
-  async remove(id: number, userId: number): Promise<void> {
+  async remove(id: string, userId: string): Promise<void> {
     const transaction = await this.findOneByUser(id, userId);
     await this.transactionRepo.remove(transaction);
   }
 
-  async updateTransaction(id: number, userId: number, transaction: Partial<Transaction>): Promise<Transaction | null> {
+  async updateTransaction(id: string, userId: string, transaction: Partial<Transaction>): Promise<Transaction | null> {
     await this.transactionRepo.update(id, transaction);
     return this.findOneByUser(id, userId);
   }

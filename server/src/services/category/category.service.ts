@@ -15,7 +15,7 @@ export class CategoryService {
     return await this.categoryRepo.find();
   }
 
-  async findOne(id: number): Promise<Category | null> {
+  async findOne(id: string): Promise<Category | null> {
     return await this.categoryRepo.findOneBy({ id });
   }
 
@@ -24,7 +24,7 @@ export class CategoryService {
     return await this.categoryRepo.save(newCategory);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     await this.categoryRepo.delete(id);
   }
 }

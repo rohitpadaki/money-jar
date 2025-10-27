@@ -14,7 +14,7 @@ export class CategoryController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Category | null> {
-    let category = await this.categoryService.findOne(+id);
+    let category = await this.categoryService.findOne(id);
     if (!category) throw new NotFoundException('Category does not exist');
 
     return category;
@@ -27,6 +27,6 @@ export class CategoryController {
 
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
-    return await this.categoryService.remove(+id);
+    return await this.categoryService.remove(id);
   }
 }

@@ -19,12 +19,12 @@ export class UserService {
 
     }
 
-    async updateUser(userId: number, user: Partial<User>): Promise<User | null> {
+    async updateUser(userId: string, user: Partial<User>): Promise<User | null> {
         await this.userRepo.update(userId, user);
         return this.userRepo.findOneBy({ id: userId });
     }
 
-    async deleteUser(userId: number): Promise<void> {
+    async deleteUser(userId: string): Promise<void> {
         await this.userRepo.delete(userId);
     }
 
