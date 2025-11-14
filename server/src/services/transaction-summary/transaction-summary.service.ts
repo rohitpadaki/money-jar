@@ -44,7 +44,7 @@ export class TransactionSummaryService {
     }
 
     async getMonthlySummary(userId: string) {
-        console.log('Debug: userId passed to summary query ->', userId);
+        // console.log('Debug: userId passed to summary query ->', userId);
         const rows = await this.transactionRepo
             .createQueryBuilder('t')
             .select("TO_CHAR(DATE_TRUNC('month', t.date), 'FMMonth YYYY')", 'month') // FM trims spaces

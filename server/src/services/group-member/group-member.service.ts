@@ -56,7 +56,7 @@ export class GroupMembersService {
     async leaveGroup(groupId: string, userId: string) {
         const group = await this.groupRepo.findOne({
             where: { id: groupId },
-            relations: ['createdBy'], // 👈 ensure we can access createdBy.id
+            relations: ['createdBy'], //
         });
 
         if (!group) {

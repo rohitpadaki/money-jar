@@ -23,7 +23,7 @@ export class AuthService {
     const user = await this.userService.findByUsername(username);
     if (!user || user.password !== password) return null;
 
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, sub: user.id }; // User identity can be accessed in sub
     return {
       access_token: this.jwtService.sign(payload),
     };

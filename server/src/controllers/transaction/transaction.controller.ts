@@ -32,9 +32,10 @@ export class TransactionController {
   }
 
   @Put(":id")
-  async update(@Param('id') id: string,
-   @Request() req,
-   @Body() dto: UpdateTransactionDto) {
+  async update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() dto: UpdateTransactionDto) {
     return await this.transactionService.updateTransaction(id, req.user.sub, dto);
   }
 }
