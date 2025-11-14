@@ -32,6 +32,12 @@ import { GroupsModule } from './modules/group/group.module';
 import { GroupMembersModule } from './modules/group-member/group-member.module';
 import { GroupMembersService } from './services/group-member/group-member.service';
 import { GroupMembersController } from './controllers/group-member/group-member.controller';
+import { ExpenseModule } from './modules/expense/expense.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { ExpenseService } from './services/expense/expense.service';
+import { ExpenseController } from './controllers/expense/expense.controller';
+import { PaymentService } from './services/payment/payment.service';
+import { PaymentController } from './controllers/payment/payment.controller';
 
 
 @Module({
@@ -57,8 +63,10 @@ import { GroupMembersController } from './controllers/group-member/group-member.
     TransactionSummaryModule,
     GroupsModule,
     GroupMembersModule,
+    ExpenseModule,
+    PaymentModule,
   ],
-  controllers: [AppController, UserController, AuthController, CategoryController, TransactionController, TransactionSummaryController, GroupsController, GroupMembersController],
-  providers: [AppService, CategoryService, TransactionService, TransactionSummaryService, GroupsService, GroupMembersService],
+  controllers: [AppController, UserController, AuthController, CategoryController, TransactionController, TransactionSummaryController, GroupsController, GroupMembersController, ExpenseController, PaymentController],
+  providers: [AppService, CategoryService, TransactionService, TransactionSummaryService, GroupsService, GroupMembersService, ExpenseService, PaymentService],
 })
 export class AppModule {}
