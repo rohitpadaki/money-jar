@@ -24,9 +24,9 @@ const DashboardPage = () => {
         <p className="text-gray-600">Manage your shared expenses and keep track of your hives</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-2 gap-8">
         {/* Personal Jar Section */}
-        <div className="lg:col-span-1">
+        <div className="col-span-1">
           <div className="card">
             <div className="flex items-center space-x-3 mb-6">
               <HoneyJarIcon size={32} />
@@ -90,7 +90,7 @@ const DashboardPage = () => {
         </div>
 
         {/* My Hives Section */}
-        <div className="lg:col-span-1">
+        <div className="col-span-1">
           <div className="card">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">My Hives</h2>
