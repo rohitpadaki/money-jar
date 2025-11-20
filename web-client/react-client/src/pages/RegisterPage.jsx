@@ -2,23 +2,51 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import HoneyJarIcon from '../components/HoneyJarIcon';
+import api from '../api';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    username: '',
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock registration - redirect to dashboard
-    navigate('/dashboard');
+    setError(null);
+
+    // (Optional) Client-side validation for matching passwords
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await api.post("/auth/register", {
+        username: formData.username, // backend expects "username"
+        name: formData.name,
+        password: formData.password,
+      });
+
+      if (response.data && response.data.user) {
+        // Registration succeeded, redirect to login (or auto-login, up to you)
+        navigate("/login");
+      } else {
+        setError(response.data.message || "Registration failed");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "An error occurred. Please try again."
+      );
+    }
   };
+
 
   const handleChange = (e) => {
     setFormData({
@@ -65,24 +93,24 @@ const RegisterPage = () => {
               </div>
             </div>
 
-            {/* Email Field */}
+            {/* Username Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Create a Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-honey-400" />
                 </div>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  // type="email"
+                  // autoComplete="email"
                   required
                   className="input-field pl-10"
-                  placeholder="Enter your email"
-                  value={formData.email}
+                  placeholder="Enter your Username"
+                  value={formData.username}
                   onChange={handleChange}
                 />
               </div>
@@ -154,7 +182,7 @@ const RegisterPage = () => {
           </div>
 
           {/* Terms and Conditions */}
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <input
               id="terms"
               name="terms"
@@ -172,7 +200,7 @@ const RegisterPage = () => {
                 Privacy Policy
               </a>
             </label>
-          </div>
+          </div> */}
 
           {/* Submit Button */}
           <div>
@@ -182,6 +210,7 @@ const RegisterPage = () => {
             >
               Create your jar
             </button>
+            {error && <div className="mb-2 text-red-500">{error}</div>}
           </div>
 
           {/* Login Link */}

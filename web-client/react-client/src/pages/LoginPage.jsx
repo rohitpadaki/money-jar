@@ -2,17 +2,41 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import HoneyJarIcon from '../components/HoneyJarIcon';
+import api from '../api';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock login - redirect to dashboard
-    navigate('/dashboard');
+    setError(null);
+
+    try {
+      const response = await api.post("/auth/login", {
+        username: username, // backend expects "username"
+        password,
+      });
+
+      if (response.data && response.data.access_token) {
+        login(response.data.access_token); 
+        // Store the JWT token
+        localStorage.setItem('authToken', response.data.access_token);
+        navigate('/dashboard');
+      } else {
+        setError(response.data.message || "Login failed");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "Something is wrong, try again."
+      );
+    }
   };
 
   return (
@@ -30,25 +54,25 @@ const LoginPage = () => {
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Email Field */}
+            {/* Username Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Enter your Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-honey-400" />
                 </div>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  // type="email"
+                  // autoComplete="email"
                   required
                   className="input-field pl-10"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Example: WinnieThePooh"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
             </div>
@@ -69,7 +93,7 @@ const LoginPage = () => {
                   autoComplete="current-password"
                   required
                   className="input-field pl-10 pr-10"
-                  placeholder="Enter your password"
+                  placeholder="Example: I love Honey"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -89,7 +113,7 @@ const LoginPage = () => {
           {/* Remember me and Forgot password */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <input
+              {/* <input
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
@@ -97,14 +121,14 @@ const LoginPage = () => {
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
                 Remember me
-              </label>
+              </label> */}
             </div>
 
-            <div className="text-sm">
+            {/* <div className="text-sm">
               <a href="#" className="font-medium text-honey-600 hover:text-honey-500">
                 Forgot your password?
               </a>
-            </div>
+            </div> */}
           </div>
 
           {/* Submit Button */}
@@ -115,6 +139,7 @@ const LoginPage = () => {
             >
               Sign in to your hive
             </button>
+            {error && <div className="mb-2 text-red-500">{error}</div>}
           </div>
 
           {/* Register Link */}

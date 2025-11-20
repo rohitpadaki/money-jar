@@ -5,9 +5,11 @@ import HoneyJarIcon from '../components/HoneyJarIcon';
 import HexagonIcon from '../components/HexagonIcon';
 import UserAvatar from '../components/UserAvatar';
 import { mockHives, mockUsers, recentTransactions, currentUser } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardPage = () => {
   // Calculate total balance for current user
+  const { user } = useAuth();
   const totalBalance = recentTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const getUserById = (id) => mockUsers.find(user => user.id === id);
@@ -17,12 +19,12 @@ const DashboardPage = () => {
       {/* Welcome Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Welcome back, {currentUser.name.split(' ')[0]}! 🍯
+          Welcome back, {user ? user.username : "User"}! 🍯
         </h1>
         <p className="text-gray-600">Manage your shared expenses and keep track of your hives</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Personal Jar Section */}
         <div className="lg:col-span-1">
           <div className="card">
@@ -88,7 +90,7 @@ const DashboardPage = () => {
         </div>
 
         {/* My Hives Section */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-1">
           <div className="card">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">My Hives</h2>
