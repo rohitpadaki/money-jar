@@ -9,7 +9,7 @@ export class Payment {
 
   @ManyToOne(() => Group, (g) => g.id, { onDelete: 'CASCADE', eager: true })
   group: Group;
-
+  
   @ManyToOne(() => User, (u) => u.id, { eager: true })
   fromUser: User; // payer of this repayment
 
