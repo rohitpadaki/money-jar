@@ -1,0 +1,23 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Define the jar shape for clipping -->
+    <rect id="jar-body" x="10" y="14" width="44" height="42" rx="12" />
+  </defs>
+
+  <!-- JAR CONTENTS (The Liquid) -->
+  <g clip-path="url(#jar-body)">
+    <!-- Yellow Top -->
+    <rect x="0" y="0" width="64" height="28" fill="#FCEE21"/>
+    <!-- Black Middle -->
+    <rect x="0" y="28" width="64" height="14" fill="#111111"/>
+    <!-- Grey Bottom -->
+    <rect x="0" y="42" width="64" height="22" fill="#E6E6E6"/>
+  </g>
+
+  <!-- JAR OUTLINE (High contrast for small sizes) -->
+  <rect x="10" y="14" width="44" height="42" rx="12" stroke="#333333" stroke-width="4"/>
+
+  <!-- THE COIN (Top Right) -->
+  <!-- Added a small stroke matching background to separate it from the jar -->
+  <circle cx="50" cy="14" r="9" fill="#2DA95C" stroke="#ffffff" stroke-width="2"/>
+</svg>
