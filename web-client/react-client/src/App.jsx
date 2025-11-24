@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import CreateHivePage from './pages/CreateHivePage';
 import HiveDetailPage from './pages/HiveDetailPage';
 import AddExpensePage from './pages/AddExpensePage';
+import PersonalJarPage from './pages/PersonalJarPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/hive/:id" element={<HiveDetailPage />} />
           <Route path="/hive/:id/add-expense" element={<AddExpensePage />} />
           <Route path="/add-expense" element={<AddExpensePage />} />
+          <Route path="/view-transactions" element={<PersonalJarPage />} />
         </Routes>
       </Layout>
     </Router>

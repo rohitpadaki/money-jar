@@ -21,16 +21,21 @@ const DashboardPage = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Welcome back, {user ? user.username : "User"}! 🍯
         </h1>
-        <p className="text-gray-600">Manage your shared expenses and keep track of your hives</p>
+        <p className="text-gray-600">Manage your expenses and keep track of your hives</p>
       </div>
 
       <div className="grid grid-cols-2 gap-8">
         {/* Personal Jar Section */}
         <div className="col-span-1">
           <div className="card">
-            <div className="flex items-center space-x-3 mb-6">
-              <HoneyJarIcon size={32} />
-              <h2 className="text-xl font-semibold text-gray-900">Personal Jar</h2>
+            <div className="flex items-center justify-between mb-6">
+              <div className='flex items-center space-x-3'>
+                <HoneyJarIcon size={32} />
+                <h2 className="text-xl font-semibold text-gray-900">Personal Jar</h2>
+              </div>
+              <span className='btn-primary'>
+                <Link to="/view-transactions">View All Transactions</Link>
+              </span>
             </div>
 
             {/* Balance */}
@@ -42,7 +47,9 @@ const DashboardPage = () => {
               {totalBalance < 0 && <p className="text-sm text-red-600">You owe</p>}
               {totalBalance > 0 && <p className="text-sm text-green-600">You're owed</p>}
               {totalBalance === 0 && <p className="text-sm text-gray-600">All settled up!</p>}
+            
             </div>
+
 
             {/* Recent Transactions */}
             <div className="mb-6">
