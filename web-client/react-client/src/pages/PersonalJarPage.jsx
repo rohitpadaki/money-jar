@@ -1,97 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, ArrowDownRight, ListFilter as Filter, Search } from 'lucide-react';
-import UserAvatar from '../components/UserAvatar';
-import { recentTransactions, mockUsers, mockHives } from '../data/mockData';
+import { getAllTransactions, getTransactionSummary } from '../services/transactionService';
+import { useAuth } from '../context/AuthContext';
 
-// Extended transaction data for demonstration
-const allTransactions = [
-  ...recentTransactions,
-  {
-    id: 4,
-    type: 'expense',
-    description: 'Internet Bill - House Roommates',
-    amount: -25.00,
-    date: '2024-01-18',
-    hiveId: 1,
-    category: 'Utilities'
-  },
-  {
-    id: 5,
-    type: 'payment',
-    description: 'Payment received from Mike',
-    amount: 52.00,
-    date: '2024-01-15',
-    hiveId: 1,
-    category: 'Settlement'
-  },
-  {
-    id: 6,
-    type: 'expense',
-    description: 'Gas for Road Trip - Weekend Trip',
-    amount: -28.50,
-    date: '2024-01-11',
-    hiveId: 2,
-    category: 'Transportation'
-  },
-  {
-    id: 7,
-    type: 'payment',
-    description: 'Payment sent to Emily',
-    amount: -45.00,
-    date: '2024-01-10',
-    hiveId: 2,
-    category: 'Settlement'
-  },
-  {
-    id: 8,
-    type: 'expense',
-    description: 'Dinner at Italian Restaurant',
-    amount: -35.75,
-    date: '2024-01-08',
-    hiveId: 1,
-    category: 'Food'
-  },
-  {
-    id: 9,
-    type: 'payment',
-    description: 'Payment received from Chris',
-    amount: 67.25,
-    date: '2024-01-05',
-    hiveId: 2,
-    category: 'Settlement'
-  },
-  {
-    id: 10,
-    type: 'expense',
-    description: 'Grocery Shopping - House Roommates',
-    amount: -42.30,
-    date: '2024-01-03',
-    hiveId: 1,
-    category: 'Food'
-  }
-];
 
 const PersonalJarPage = () => {
+  const { user } = useAuth();
+  const [allTransactions, setAllTransactions] = useState([]);
+  const [summary, setSummary] = useState({ totalBalance: 0, totalIncome: 0, totalExpenses: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
 
-  const getHiveById = (id) => mockHives.find(hive => hive.id === id);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [transactionsData, summaryData] = await Promise.all([
+          getAllTransactions(),
+          getTransactionSummary(),
+        ]);
+        setAllTransactions(transactionsData);
+        setSummary(summaryData);
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch transaction data.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredTransactions = allTransactions.filter(transaction => {
-    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'all' || transaction.type === filterType;
-    const matchesCategory = filterCategory === 'all' || transaction.category === filterCategory;
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
+
+  const filteredTransactions = useMemo(() => {
+    return allTransactions.filter(transaction => {
+    const matchesSearch = (transaction.note || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'all' || transaction.type.toLowerCase() === filterType;
+    const categoryName = transaction.category ? transaction.category.name : 'Uncategorized';
+    const matchesCategory = filterCategory === 'all' || categoryName === filterCategory;
     
     return matchesSearch && matchesType && matchesCategory;
-  });
+  })
+}, [allTransactions, searchTerm, filterType, filterCategory]);
 
-  const totalBalance = allTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
-  const totalIncome = allTransactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
-  const totalExpenses = Math.abs(allTransactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0));
 
-  const categories = ['all', 'Food', 'Transportation', 'Utilities', 'Settlement', 'Accommodation', 'Entertainment'];
+  const categories = useMemo(() => {
+    const allCats = new Set(allTransactions.map(t => t.category ? t.category.name : 'Uncategorized'));
+    return ['all', ...Array.from(allCats)];
+  }, [allTransactions]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -110,27 +83,27 @@ const PersonalJarPage = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="card text-center">
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="card text-center col-span-2">
           <p className="text-sm text-gray-600 mb-1">Total Balance</p>
-          <p className={`text-2xl font-bold ${totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            ${Math.abs(totalBalance).toFixed(2)}
+          <p className={`text-2xl font-bold ${summary.totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            ${Math.abs(summary.totalBalance).toFixed(2)}
           </p>
-          <p className="text-xs text-gray-500">
-            {totalBalance >= 0 ? 'You\'re owed' : 'You owe'}
-          </p>
+          {/* <p className="text-xs text-gray-500">
+            {summary.totalBalance >= 0 ? "You're owed" : 'You owe'}
+          </p> */}
         </div>
         
         <div className="card text-center">
           <p className="text-sm text-gray-600 mb-1">Total Received</p>
-          <p className="text-2xl font-bold text-green-600">${totalIncome.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-green-600">${summary.totalIncome.toFixed(2)}</p>
           <p className="text-xs text-gray-500">Payments received</p>
         </div>
         
         <div className="card text-center">
           <p className="text-sm text-gray-600 mb-1">Total Spent</p>
-          <p className="text-2xl font-bold text-red-600">${totalExpenses.toFixed(2)}</p>
-          <p className="text-xs text-gray-500">Your share of expenses</p>
+          <p className="text-2xl font-bold text-red-600">${summary.totalExpenses.toFixed(2)}</p>
+          <p className="text-xs text-gray-500">Your expenses</p>
         </div>
       </div>
 
@@ -146,7 +119,7 @@ const PersonalJarPage = () => {
                 placeholder="Search transactions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field pl-10"
+                className="input-field !pl-10"
               />
             </div>
           </div>
@@ -160,7 +133,7 @@ const PersonalJarPage = () => {
             >
               <option value="all">All Types</option>
               <option value="expense">Expenses</option>
-              <option value="payment">Payments</option>
+              <option value="income">Income</option>
             </select>
           </div>
 
@@ -193,14 +166,15 @@ const PersonalJarPage = () => {
         {filteredTransactions.length > 0 ? (
           <div className="space-y-3">
             {filteredTransactions.map((transaction) => {
-              const hive = getHiveById(transaction.hiveId);
+              const isIncome = transaction.type === 'income';
+              const categoryName = transaction.category ? transaction.category.name : 'Uncategorized';
               return (
                 <div key={transaction.id} className="flex items-center justify-between p-4 bg-honey-50 rounded-lg hover:bg-honey-100 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className={`p-3 rounded-full ${
-                      transaction.amount > 0 ? 'bg-green-100' : 'bg-red-100'
+                      isIncome ? 'bg-green-100' : 'bg-red-100'
                     }`}>
-                      {transaction.amount > 0 ? (
+                      {isIncome ? (
                         <ArrowUpRight className="w-5 h-5 text-green-600" />
                       ) : (
                         <ArrowDownRight className="w-5 h-5 text-red-600" />
@@ -209,43 +183,32 @@ const PersonalJarPage = () => {
                     
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
-                        <p className="font-medium text-gray-900">{transaction.description}</p>
+                        <p className="font-medium text-gray-900">{transaction.note || 'Transaction'}</p>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          transaction.type === 'expense' 
+                          !isIncome 
                             ? 'bg-red-100 text-red-700' 
                             : 'bg-green-100 text-green-700'
                         }`}>
-                          {transaction.type}
+                          {transaction.type.toLowerCase()}
                         </span>
                       </div>
                       
                       <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <span>{transaction.date}</span>
+                        <span>{new Date(transaction.date).toLocaleDateString()}</span>
                         <span>•</span>
-                        <span>{transaction.category}</span>
-                        {hive && (
-                          <>
-                            <span>•</span>
-                            <Link 
-                              to={`/hive/${hive.id}`}
-                              className="text-honey-600 hover:text-honey-700 font-medium"
-                            >
-                              {hive.name}
-                            </Link>
-                          </>
-                        )}
+                        <span>{categoryName}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="text-right">
                     <p className={`text-lg font-bold ${
-                      transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
+                      isIncome ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                      {isIncome ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {transaction.amount > 0 ? 'received' : 'paid'}
+                      {isIncome ? 'received' : 'paid'}
                     </p>
                   </div>
                 </div>

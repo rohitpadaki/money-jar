@@ -85,7 +85,7 @@ const RegisterPage = () => {
                   type="text"
                   autoComplete="name"
                   required
-                  className="input-field pl-10"
+                  className="input-field !pl-10"
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
@@ -108,7 +108,7 @@ const RegisterPage = () => {
                   // type="email"
                   // autoComplete="email"
                   required
-                  className="input-field pl-10"
+                  className="input-field !pl-10"
                   placeholder="Enter your Username"
                   value={formData.username}
                   onChange={handleChange}
@@ -131,7 +131,7 @@ const RegisterPage = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
-                  className="input-field pl-10 pr-10"
+                  className="input-field !pl-10 !pr-10"
                   placeholder="Create a password"
                   value={formData.password}
                   onChange={handleChange}
@@ -163,7 +163,7 @@ const RegisterPage = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
-                  className="input-field pl-10 pr-10"
+                  className="input-field !pl-10 !pr-10"
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}

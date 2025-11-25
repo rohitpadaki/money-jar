@@ -54,7 +54,7 @@ const HiveDetailPage = () => {
           <p className="text-gray-600">Created on {hive.createdAt}</p>
         </div>
         <div className="flex space-x-3">
-          <Link to={`/hive/${hive.id}/add-expense`} className="btn-primary flex items-center space-x-2">
+          <Link to={`/hive/${hive.id}/add-transaction`} className="btn-primary flex items-center space-x-2">
             <Plus size={20} />
             <span>Add Expense</span>
           </Link>
@@ -151,7 +151,7 @@ const HiveDetailPage = () => {
               <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-600 mb-4">No expenses yet</p>
               <Link
-                to={`/hive/${hive.id}/add-expense`}
+                to={`/hive/${hive.id}/add-transaction`}
                 className="btn-primary inline-flex items-center space-x-2"
               >
                 <Plus size={20} />

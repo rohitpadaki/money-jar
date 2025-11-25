@@ -69,7 +69,7 @@ const LoginPage = () => {
                   // type="email"
                   // autoComplete="email"
                   required
-                  className="input-field pl-10"
+                  className="input-field !pl-10"
                   placeholder="Example: WinnieThePooh"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -92,7 +92,7 @@ const LoginPage = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
-                  className="input-field pl-10 pr-10"
+                  className="input-field !pl-10 !pr-10"
                   placeholder="Example: I love Honey"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

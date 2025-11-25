@@ -6,7 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import CreateHivePage from './pages/CreateHivePage';
 import HiveDetailPage from './pages/HiveDetailPage';
-import AddExpensePage from './pages/AddExpensePage';
+import AddTransactionPage from './pages/AddTransactionPage';
 import PersonalJarPage from './pages/PersonalJarPage';
 
 function App() {
@@ -20,8 +20,8 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/create-hive" element={<CreateHivePage />} />
           <Route path="/hive/:id" element={<HiveDetailPage />} />
-          <Route path="/hive/:id/add-expense" element={<AddExpensePage />} />
-          <Route path="/add-expense" element={<AddExpensePage />} />
+          <Route path="/hive/:id/add-transaction" element={<AddTransactionPage />} />
+          <Route path="/add-transaction" element={<AddTransactionPage />} />
           <Route path="/view-transactions" element={<PersonalJarPage />} />
         </Routes>
       </Layout>

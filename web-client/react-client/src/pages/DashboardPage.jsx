@@ -1,16 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import HoneyJarIcon from '../components/HoneyJarIcon';
 import HexagonIcon from '../components/HexagonIcon';
 import UserAvatar from '../components/UserAvatar';
-import { mockHives, mockUsers, recentTransactions, currentUser } from '../data/mockData';
+import { mockHives, mockUsers } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
+import { getBalance, getAllTransactions } from '../services/transactionService';
 
 const DashboardPage = () => {
-  // Calculate total balance for current user
   const { user } = useAuth();
-  const totalBalance = recentTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [recentTransactions, setRecentTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+      try {
+        setLoading(true);
+        const [balanceData, transactionsData] = await Promise.all([
+          getBalance(),
+          getAllTransactions(),
+        ]);
+        setTotalBalance(balanceData.balance);
+        setRecentTransactions(transactionsData);
+        setError(null);
+      } catch (err) {
+        setError("Couldn't load your jar data.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   const getUserById = (id) => mockUsers.find(user => user.id === id);
 
@@ -40,58 +66,67 @@ const DashboardPage = () => {
 
             {/* Balance */}
             <div className="mb-6">
-              <p className="text-sm text-gray-600 mb-1">This Month</p>
-              <p className={`text-3xl font-bold ${totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                ${Math.abs(totalBalance).toFixed(2)}
-              </p>
-              {totalBalance < 0 && <p className="text-sm text-red-600">You owe</p>}
-              {totalBalance > 0 && <p className="text-sm text-green-600">You're owed</p>}
-              {totalBalance === 0 && <p className="text-sm text-gray-600">All settled up!</p>}
-            
+              <p className="text-sm text-gray-600 mb-1">Your Balance</p>
+              {loading ? (
+                <p className="text-lg">Loading...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : 
+              (
+                <>
+                  <p className={`text-3xl font-bold ${totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ${Math.abs(totalBalance).toFixed(2)}
+                  </p>
+                </>
+              )
+              }
             </div>
 
 
             {/* Recent Transactions */}
             <div className="mb-6">
               <h3 className="text-lg font-medium text-gray-900 mb-3">Recent Transactions</h3>
-              {recentTransactions.length > 0 ? (
+              {loading ? (
+                <p>Loading...</p>
+              ) : error ? (
+                 <p className="text-red-500">{error}</p>
+              ) : recentTransactions.length > 0 ? (
                 <div className="space-y-3">
-                  {recentTransactions.slice(0, 3).map((transaction) => (
-                    <div key={transaction.id} className="flex items-center justify-between p-3 bg-honey-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className={`p-2 rounded-full ${
-                          transaction.amount > 0 ? 'bg-green-100' : 'bg-red-100'
-                        }`}>
-                          {transaction.amount > 0 ? (
-                            <ArrowUpRight className="w-4 h-4 text-green-600" />
-                          ) : (
-                            <ArrowDownRight className="w-4 h-4 text-red-600" />
-                          )}
+                  {recentTransactions.slice(0, 3).map((transaction) => {
+                    const isIncome = transaction.type === 'income';
+                    return (
+                      <div key={transaction.id} className="flex items-center justify-between p-3 bg-honey-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-full ${isIncome ? 'bg-green-100' : 'bg-red-100'}`}>
+                            {isIncome ? (
+                              <ArrowUpRight className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <ArrowDownRight className="w-4 h-4 text-red-600" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{transaction.note || 'Transaction'}</p>
+                            <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{transaction.description}</p>
-                          <p className="text-xs text-gray-500">{transaction.date}</p>
-                        </div>
+                        <p className={`font-medium ${isIncome ? 'text-green-600' : 'text-red-600'}`}>
+                          {isIncome ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                        </p>
                       </div>
-                      <p className={`font-medium ${
-                        transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
-                      </p>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ) : (
                 <p className="text-gray-500 text-center py-4">No transactions yet</p>
               )}
             </div>
 
-            {/* Add Expense Button */}
+            {/* Add Transaction Button */}
             <Link
-              to="/add-expense"
+              to="/add-transaction"
               className="w-full btn-primary text-center block py-3 rounded-xl font-medium"
             >
-              Add Expense
+              Add Transaction
             </Link>
           </div>
         </div>
