@@ -4,14 +4,15 @@ import { Plus, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import HoneyJarIcon from '../components/HoneyJarIcon';
 import HexagonIcon from '../components/HexagonIcon';
 import UserAvatar from '../components/UserAvatar';
-import { mockHives, mockUsers } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 import { getBalance, getAllTransactions } from '../services/transactionService';
+import { getMyGroups } from '../services/groupService';
 
 const DashboardPage = () => {
   const { user } = useAuth();
   const [totalBalance, setTotalBalance] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [hives, setHives] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -20,15 +21,18 @@ const DashboardPage = () => {
       if (!user) return;
       try {
         setLoading(true);
-        const [balanceData, transactionsData] = await Promise.all([
+        // Fetch all data in parallel
+        const [balanceData, transactionsData, hivesData] = await Promise.all([
           getBalance(),
           getAllTransactions(),
+          getMyGroups(),
         ]);
         setTotalBalance(balanceData.balance);
         setRecentTransactions(transactionsData);
+        setHives(hivesData);
         setError(null);
       } catch (err) {
-        setError("Couldn't load your jar data.");
+        setError("Couldn't load your data. Please try again.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -37,8 +41,6 @@ const DashboardPage = () => {
 
     fetchData();
   }, [user]);
-
-  const getUserById = (id) => mockUsers.find(user => user.id === id);
 
   return (
     <div className="space-y-8">
@@ -51,7 +53,7 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-8">
-        {/* Personal Jar Section */}
+        {/* Personal Jar Section (No changes here) */}
         <div className="col-span-1">
           <div className="card">
             <div className="flex items-center justify-between mb-6">
@@ -64,7 +66,6 @@ const DashboardPage = () => {
               </span>
             </div>
 
-            {/* Balance */}
             <div className="mb-6">
               <p className="text-sm text-gray-600 mb-1">Your Balance</p>
               {loading ? (
@@ -82,8 +83,6 @@ const DashboardPage = () => {
               }
             </div>
 
-
-            {/* Recent Transactions */}
             <div className="mb-6">
               <h3 className="text-lg font-medium text-gray-900 mb-3">Recent Transactions</h3>
               {loading ? (
@@ -121,7 +120,6 @@ const DashboardPage = () => {
               )}
             </div>
 
-            {/* Add Transaction Button */}
             <Link
               to="/add-transaction"
               className="w-full btn-primary text-center block py-3 rounded-xl font-medium"
@@ -131,7 +129,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* My Hives Section */}
+        {/* My Hives Section (Updated) */}
         <div className="col-span-1">
           <div className="card">
             <div className="flex items-center justify-between mb-6">
@@ -145,9 +143,13 @@ const DashboardPage = () => {
               </Link>
             </div>
 
-            {mockHives.length > 0 ? (
+            {loading ? (
+              <p>Loading hives...</p>
+            ) : error ? (
+              <p className="text-red-500">{error}</p>
+            ) : hives.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockHives.map((hive) => (
+                {hives.map((hive) => (
                   <Link
                     key={hive.id}
                     to={`/hive/${hive.id}`}
@@ -155,29 +157,15 @@ const DashboardPage = () => {
                   >
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-900">{hive.name}</h3>
+
                       <HexagonIcon size={24} />
                     </div>
                     
-                    <div className="flex items-center space-x-2 mb-3">
-                      <div className="flex -space-x-2">
-                        {hive.members.slice(0, 3).map((memberId) => {
-                          const member = getUserById(memberId);
-                          return member ? (
-                            <UserAvatar key={member.id} user={member} size="sm" className="border-2 border-white" />
-                          ) : null;
-                        })}
-                        {hive.members.length > 3 && (
-                          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 border-2 border-white">
-                            +{hive.members.length - 3}
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-sm text-gray-600">{hive.members.length} members</span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">{hive.expenses.length} expenses</span>
-                      <span className="font-semibold text-honey-600">${hive.totalBalance.toFixed(2)}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">{hive.memberCount} members</span>
+                      <span className="text-xs text-gray-500">
+                        by {hive.createdBy.username}
+                      </span>
                     </div>
                   </Link>
                 ))}

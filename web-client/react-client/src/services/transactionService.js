@@ -4,7 +4,7 @@ import api from "../api";
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('authToken');
   if (!token) {
     // Handle case where token is not available
     console.error("No auth token found");

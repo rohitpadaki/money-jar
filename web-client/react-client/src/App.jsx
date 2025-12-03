@@ -8,6 +8,8 @@ import CreateHivePage from './pages/CreateHivePage';
 import HiveDetailPage from './pages/HiveDetailPage';
 import AddTransactionPage from './pages/AddTransactionPage';
 import PersonalJarPage from './pages/PersonalJarPage';
+import AddExpensePage from './pages/AddExpensePage';
+import AddPaymentPage from './pages/AddPaymentPage';
 
 function App() {
   return (
@@ -20,9 +22,10 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/create-hive" element={<CreateHivePage />} />
           <Route path="/hive/:id" element={<HiveDetailPage />} />
-          <Route path="/hive/:id/add-transaction" element={<AddTransactionPage />} />
           <Route path="/add-transaction" element={<AddTransactionPage />} />
           <Route path="/view-transactions" element={<PersonalJarPage />} />
+          <Route path="/hive/:hiveId/add-expense" element={<AddExpensePage />} />
+          <Route path="/hive/:hiveId/add-payment" element={<AddPaymentPage />} />
         </Routes>
       </Layout>
     </Router>
