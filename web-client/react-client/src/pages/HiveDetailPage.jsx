@@ -5,14 +5,17 @@ import UserAvatar from '../components/UserAvatar';
 import { getGroupDetails } from '../services/groupService';
 import { getExpensesForGroup } from '../services/expenseService';
 import { getPaymentsForGroup } from '../services/paymentService';
+import { useAuth } from '../context/AuthContext';
 
 const HiveDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [hive, setHive] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [userBalance, setUserBalance] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('expenses');
@@ -41,6 +44,32 @@ const HiveDetailPage = () => {
     };
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    if (hive && user && expenses && payments) {
+      const currentUser = user;
+      const numMembers = hive.members.length;
+      if (numMembers === 0) return;
+
+      const totalExpense = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+      const userShare = totalExpense / numMembers;
+
+      const totalPaidByCurrentUser = expenses
+        .filter(exp => exp.payer.id === currentUser.id)
+        .reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+      
+      const paymentsMade = payments
+        .filter(p => p.fromUser.id === currentUser.id)
+        .reduce((sum, p) => sum + parseFloat(p.amount), 0);
+
+      const paymentsReceived = payments
+        .filter(p => p.toUser.id === currentUser.id)
+        .reduce((sum, p) => sum + parseFloat(p.amount), 0);
+
+      const balance = totalPaidByCurrentUser - userShare + paymentsReceived - paymentsMade;
+      setUserBalance(balance);
+    }
+  }, [hive, expenses, payments, user]);
 
   if (loading) {
     return <div className="text-center p-8">Loading Hive...</div>;
@@ -86,8 +115,10 @@ const HiveDetailPage = () => {
         </div>
         <div className="col-span-2 card text-center">
           <CreditCard className="w-8 h-8 mx-auto text-honey-500 mb-2" />
-          <p className="text-2xl font-bold text-green-600">$0.00</p>
-          <p className="text-gray-600">You are owed</p>
+          <p className={`text-2xl font-bold ${userBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            ${Math.abs(userBalance).toFixed(2)}
+          </p>
+          <p className="text-gray-600">{userBalance >= 0 ? 'You are owed' : 'You owe'}</p>
         </div>
       </div>
 
@@ -103,6 +134,9 @@ const HiveDetailPage = () => {
           <button
           onClick={() => navigate(`/hive/${id}/add-payment`)}
           className="btn-secondary">Pay Someone</button>
+          <button
+            onClick={() => navigate(`/hive/${id}/settle-up`)}
+            className="btn-secondary">Settle Up</button>
         </div>
         <div className="flex -space-x-2">
           {hive.members.map((member) => (
@@ -113,7 +147,7 @@ const HiveDetailPage = () => {
       
       {/* Tabs */}
       <div className="border-b border-gray-200 mb-6">
-        <nav className="flex !space-x-6">
+        <nav className="flex space-x-6!">
           <button onClick={() => setActiveTab('expenses')} className={`py-3 px-1 font-medium ${activeTab === 'expenses' ? 'border-b-2 border-honey-500 text-honey-600' : 'text-gray-600 hover:text-gray-800'}`}>
             Expenses ({expenses.length})
           </button>
@@ -127,18 +161,42 @@ const HiveDetailPage = () => {
       <div>
         {activeTab === 'expenses' && (
           <div className="space-y-4">
-            {expenses.length > 0 ? expenses.map(exp => (
+            {expenses.length > 0 ? expenses.map(exp => {
+              const perPersonShare = parseFloat(exp.amount) / hive.members.length;
+              const currentUserIsPayer = exp.payer.id === user.id;
+              
+              let userInvolvement;
+              if (hive.members.length > 1) {
+                  if (currentUserIsPayer) {
+                    const amountLent = parseFloat(exp.amount) - perPersonShare;
+                    userInvolvement = (
+                      <p className="text-sm text-green-600 font-semibold">
+                        You lent ${amountLent.toFixed(2)}
+                      </p>
+                    );
+                  } else {
+                    userInvolvement = (
+                      <p className="text-sm text-red-600 font-semibold">
+                        Your share ${perPersonShare.toFixed(2)}
+                      </p>
+                    );
+                  }
+              }
+
+              return (
               <div key={exp.id} className="card flex justify-between items-center">
                 <div>
                   <p className="font-semibold text-gray-900">{exp.note || 'Expense'}</p>
                   <p className="text-sm text-gray-600">Paid by {exp.payer.name}</p>
+                  {userInvolvement}
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-red-600">${parseFloat(exp.amount).toFixed(2)}</p>
+                  <p className="text-lg font-bold text-gray-800">${parseFloat(exp.amount).toFixed(2)}</p>
                   <p className="text-sm text-gray-500 text-right">{new Date(exp.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
-            )) : <p className="text-center text-gray-500 py-8">No expenses recorded yet.</p>}
+              )
+            }) : <p className="text-center text-gray-500 py-8">No expenses recorded yet.</p>}
           </div>
         )}
         {activeTab === 'payments' && (
