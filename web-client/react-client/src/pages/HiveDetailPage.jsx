@@ -51,8 +51,11 @@ const HiveDetailPage = () => {
       const numMembers = hive.members.length;
       if (numMembers === 0) return;
 
-      const totalExpense = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
-      const userShare = totalExpense / numMembers;
+      // Correctly calculate user's total share from all expenses
+      const userShare = expenses.reduce((total, expense) => {
+        const participant = expense.participants.find(p => p.user.id === currentUser.id);
+        return total + (participant ? parseFloat(participant.share) : 0);
+      }, 0);
 
       const totalPaidByCurrentUser = expenses
         .filter(exp => exp.payer.id === currentUser.id)
@@ -66,7 +69,8 @@ const HiveDetailPage = () => {
         .filter(p => p.toUser.id === currentUser.id)
         .reduce((sum, p) => sum + parseFloat(p.amount), 0);
 
-      const balance = totalPaidByCurrentUser - userShare + paymentsReceived - paymentsMade;
+      // Corrected balance formula
+      const balance = totalPaidByCurrentUser - userShare + paymentsMade - paymentsReceived;
       setUserBalance(balance);
     }
   }, [hive, expenses, payments, user]);
