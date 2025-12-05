@@ -1,5 +1,5 @@
 // groups.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Group } from 'src/models/group.entity';
@@ -74,4 +74,21 @@ export class GroupsService {
     };
   }
 
+  async deleteGroup(groupId: string, userId: string) {
+    const group = await this.groupRepo.findOne({
+      where: { id: groupId },
+      relations: ['createdBy'],
+    });
+
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+
+    if (group.createdBy.id !== userId) {
+      throw new ForbiddenException('Only the group creator can delete the group');
+    }
+
+    await this.groupRepo.delete(groupId);
+    return { message: 'Group deleted successfully' };
+  }
 }

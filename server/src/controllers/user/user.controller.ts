@@ -43,6 +43,7 @@ export class UserController {
     @ApiParam({ name: 'username', description: 'The username of the user' })
     async findUser(@Param("username") username:string){
         let user = await this.userService.findByUsername(username);
+        // console.log(user);
         if(!user) throw new NotFoundException('User does not exist');
 
         return new PublicUserDto(user);

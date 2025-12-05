@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Req, UseGuards, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, Get, Param, Delete } from '@nestjs/common';
 import { GroupsService } from 'src/services/group/group.service';
 import { JwtAuthGuard } from 'src/guards/jwt-auth/jwt-auth.guard';
 import { CreateGroupDto } from './dto/createGroupDto.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags('Groups')
@@ -87,6 +87,31 @@ export class GroupsController {
     @Get(':groupId')
     async getGroup(@Param('groupId') groupId: string) {
         return this.groupsService.getGroupDetails(groupId);
+    }
+
+    @ApiOperation({ summary: 'Delete a group' })
+    @ApiParam({ name: 'groupId', description: 'The ID of the group' })
+    @ApiOkResponse({
+        description: 'Group successfully deleted',
+        schema: {
+          example: { message: 'Group deleted successfully' },
+        },
+      })
+      @ApiNotFoundResponse({
+        description: 'Group not found',
+        schema: {
+          example: { statusCode: 404, message: 'Group not found', error: 'Not Found' },
+        },
+      })
+      @ApiForbiddenResponse({
+        description: 'Only group creator can delete the group',
+        schema: {
+          example: { statusCode: 403, message: 'Only the group creator can delete the group', error: 'Forbidden' },
+        },
+      })
+    @Delete(':groupId')
+    async deleteGroup(@Param('groupId') groupId: string, @Req() req) {
+        return this.groupsService.deleteGroup(groupId, req.user.sub);
     }
 
 }

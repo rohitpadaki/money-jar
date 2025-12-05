@@ -38,7 +38,29 @@ export const addMemberToGroup = async (groupId, userId) => {
     return response.data;
   };
 
-  export const getGroupDetails = async (groupId) => {
-    const response = await api.get(`${API_URL}/groups/${groupId}`, getAuthHeaders());
-    return response.data;
-  };
+export const getGroupDetails = async (groupId) => {
+  const response = await api.get(`${API_URL}/groups/${groupId}`, getAuthHeaders());
+  return response.data;
+};
+
+export const findUserByUsername = async (username) => {
+  // console.log(username);
+  const response = await api.get(`${API_URL}/user/${username}`, getAuthHeaders());
+  // console.log(response.data);
+  return response.data;
+};
+
+export const removeMemberFromGroup = async (groupId, userId) => {
+  const response = await api.delete(`${API_URL}/group-members/${groupId}/remove/${userId}`, getAuthHeaders());
+  return response.data;
+};
+
+export const leaveGroup = async (groupId) => {
+  const response = await api.delete(`${API_URL}/group-members/${groupId}/leave`, getAuthHeaders());
+  return response.data;
+};
+
+export const deleteGroup = async (groupId) => {
+  const response = await api.delete(`${API_URL}/groups/${groupId}`, getAuthHeaders());
+  return response.data;
+};

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Users, Receipt, CreditCard, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Plus, Users, Receipt, CreditCard, ArrowRight, Settings } from 'lucide-react';
 import UserAvatar from '../components/UserAvatar';
-import { getGroupDetails } from '../services/groupService';
 import { getExpensesForGroup } from '../services/expenseService';
 import { getPaymentsForGroup } from '../services/paymentService';
 import { useAuth } from '../context/AuthContext';
+import HiveManagementModal from '../components/HiveManagementModal';
+import { getGroupDetails, addMemberToGroup, removeMemberFromGroup, leaveGroup, deleteGroup, findUserByUsername } from '../services/groupService';
 
 const HiveDetailPage = () => {
   const { id } = useParams();
@@ -19,30 +20,31 @@ const HiveDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('expenses');
+  const [isManagementModalOpen, setManagementModalOpen] = useState(false);
+
+  const fetchHiveData = async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      const [hiveData, expensesData, paymentsData] = await Promise.all([
+        getGroupDetails(id),
+        getExpensesForGroup(id),
+        getPaymentsForGroup(id),
+      ]);
+      setHive(hiveData);
+      setExpenses(expensesData);
+      setPayments(paymentsData);
+      setError(null);
+    } catch (err) {
+      setError("Couldn't load hive details. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!id) return;
-      try {
-        setLoading(true);
-        // Fetch all data in parallel for efficiency
-        const [hiveData, expensesData, paymentsData] = await Promise.all([
-          getGroupDetails(id),
-          getExpensesForGroup(id),
-          getPaymentsForGroup(id),
-        ]);
-        setHive(hiveData);
-        setExpenses(expensesData);
-        setPayments(paymentsData);
-        setError(null);
-      } catch (err) {
-        setError("Couldn't load hive details. Please try again.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchHiveData();
   }, [id]);
 
   useEffect(() => {
@@ -75,6 +77,63 @@ const HiveDetailPage = () => {
     }
   }, [hive, expenses, payments, user]);
 
+  const handleAddMember = async (e) => {
+    e.preventDefault();
+    const username = e.target.elements.username.value;
+    if (!username) return;
+    try {
+      const userToAdd = await findUserByUsername(username);
+      
+      if (userToAdd) {
+        await addMemberToGroup(id, userToAdd.id);
+        fetchHiveData();
+        e.target.reset();
+      } else {
+        alert('User not found.');
+      }
+    } catch (error) {
+      alert('Failed to add member. Make sure the username is correct.');
+      console.error(error);
+    }
+  };
+
+  const handleRemoveMember = async (userId) => {
+    if (window.confirm('Are you sure you want to remove this member?')) {
+      try {
+        await removeMemberFromGroup(id, userId);
+        fetchHiveData();
+      } catch (error) {
+        alert('Failed to remove member.');
+        console.error(error);
+      }
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    if (window.confirm('Are you sure you want to leave this hive? This action cannot be undone.')) {
+      try {
+        await leaveGroup(id);
+        navigate('/dashboard');
+      } catch (error) {
+        alert('Failed to leave hive.');
+        console.error(error);
+      }
+    }
+  };
+
+  const handleDeleteGroup = async () => {
+    if (window.confirm('Are you sure you want to delete this hive? All expenses and payments will be lost. This action cannot be undone.')) {
+      try {
+        await deleteGroup(id);
+        navigate('/dashboard');
+      } catch (error) {
+        alert('Failed to delete hive.');
+        console.error(error);
+      }
+    }
+  };
+
+  
   if (loading) {
     return <div className="text-center p-8">Loading Hive...</div>;
   }
@@ -92,17 +151,25 @@ const HiveDetailPage = () => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center space-x-4 mb-6">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="p-2 hover:bg-honey-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
-        </button>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{hive.name}</h1>
-          <p className="text-gray-600">Created by {hive.createdBy.username}</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="p-2 hover:bg-honey-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-6 h-6 text-gray-600" />
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{hive.name}</h1>
+            <p className="text-gray-600">Created by {hive.createdBy.username}</p>
+          </div>
         </div>
+        <button
+            onClick={() => setManagementModalOpen(true)}
+            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <Settings className="w-6 h-6 text-gray-600" />
+        </button>
       </div>
 
       {/* Summary Cards */}
@@ -221,6 +288,16 @@ const HiveDetailPage = () => {
           </div>
         )}
       </div>
+      <HiveManagementModal
+        isOpen={isManagementModalOpen}
+        onClose={() => setManagementModalOpen(false)}
+        hive={hive}
+        currentUser={user}
+        onAddMember={handleAddMember}
+        onRemoveMember={handleRemoveMember}
+        onLeaveGroup={handleLeaveGroup}
+        onDeleteGroup={handleDeleteGroup}
+      />
     </div>
   );
 };
