@@ -6,10 +6,10 @@ import { getExpensesForGroup } from '../services/expenseService';
 import { getPaymentsForGroup } from '../services/paymentService';
 import { useAuth } from '../context/AuthContext';
 import HiveManagementModal from '../components/HiveManagementModal';
-import { getGroupDetails, addMemberToGroup, removeMemberFromGroup, leaveGroup, deleteGroup, findUserByUsername } from '../services/groupService';
+import { getGroupDetails, addMemberToGroup, removeMemberFromGroup, leaveGroup, deleteGroup, findUserByUsername, deleteExpense } from '../services/groupService';
 
 const HiveDetailPage = () => {
-  const { id } = useParams();
+  const { id } = useParams();   // => Group Id
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -133,6 +133,18 @@ const HiveDetailPage = () => {
     }
   };
 
+  const handleDeleteExpense = async (expenseId) => {
+    if (!window.confirm("Delete this expense? This cannot be undone.")) return;
+  
+    try {
+      await deleteExpense(id, expenseId);
+      await fetchHiveData(); // refresh list
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete expense.");
+    }
+  };
+
   
   if (loading) {
     return <div className="text-center p-8">Loading Hive...</div>;
@@ -209,11 +221,11 @@ const HiveDetailPage = () => {
             onClick={() => navigate(`/hive/${id}/settle-up`)}
             className="btn-secondary">Settle Up</button>
         </div>
-        <div className="flex -space-x-2">
+        {/* <div className="flex -space-x-2">
           {hive.members.map((member) => (
             <UserAvatar key={member.id} user={{ name: member.username }} size="md" className="border-2 border-white" />
-          ))}
-        </div>
+          ))} */}
+        {/* </div> */}
       </div>
       
       {/* Tabs */}
@@ -256,14 +268,27 @@ const HiveDetailPage = () => {
 
               return (
               <div key={exp.id} className="card flex justify-between items-center">
-                <div>
-                  <p className="font-semibold text-gray-900">{exp.note || 'Expense'}</p>
-                  <p className="text-sm text-gray-600">Paid by {exp.payer.name}</p>
-                  {userInvolvement}
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-gray-800">${parseFloat(exp.amount).toFixed(2)}</p>
-                  <p className="text-sm text-gray-500 text-right">{new Date(exp.createdAt).toLocaleDateString()}</p>
+                  <div>
+                    <p className="font-semibold text-gray-900">{exp.note || 'Expense'}</p>
+                    <p className="text-sm text-gray-600">Paid by {exp.payer.name}</p>
+                    {userInvolvement}
+                  </div>
+                  
+                  
+                <div className='flex'>
+                  {exp.payer.id === user.id && (
+                  <button
+                      onClick={() => handleDeleteExpense(exp.id)}
+                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                    >
+                      Delete
+                  </button>
+                  )} 
+
+                  <div>
+                    <p className="text-lg font-bold text-gray-800">${parseFloat(exp.amount).toFixed(2)}</p>
+                    <p className="text-sm text-gray-500 text-right">{new Date(exp.createdAt).toLocaleDateString()}</p>
+                  </div>
                 </div>
               </div>
               )

@@ -64,3 +64,7 @@ export const deleteGroup = async (groupId) => {
   const response = await api.delete(`${API_URL}/groups/${groupId}`, getAuthHeaders());
   return response.data;
 };
+
+export const deleteExpense = async (groupId, expenseId) => {
+  const response = await api.delete(`${API_URL}/groups/${groupId}/expenses/${expenseId}`)
+}
