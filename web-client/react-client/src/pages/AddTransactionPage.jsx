@@ -132,7 +132,7 @@ const AddTransactionPage = () => {
                   name="amount"
                   value={formData.amount}
                   onChange={handleChange}
-                  className="input-field !pl-10"
+                  className="input-field pl-10!"
                   placeholder="0.00"
                   step="0.01"
                   min="0"

@@ -140,7 +140,7 @@ const AddExpensePage = () => {
               ))}
             </div>
           )}
-          <p className="text-sm text-gray-500 mt-3 text-center">Paid by you and split with {splitType === 'ALL' ? 'everyone' : `${participants.length} people`}.</p>
+          <p className="text-sm text-gray-500 mt-3 text-center">Split by {splitType === 'ALL' ? 'everyone' : `${participants.length} people`}.</p>
         </div>
         
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
