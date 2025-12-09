@@ -24,3 +24,8 @@ export const createExpense = async (groupId, expenseData) => {
     const response = await api.post(`${API_URL}/groups/${groupId}/expenses`, expenseData, getAuthHeaders());
     return response.data;
   };
+
+export const getExpenseDetails = async (groupId, expenseId) => {
+  const response = await api.get(`${API_URL}/groups/${groupId}/expenses/${expenseId}`, getAuthHeaders());
+  return response.data;
+}

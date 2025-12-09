@@ -21,6 +21,7 @@ const HiveDetailPage = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('expenses');
   const [isManagementModalOpen, setManagementModalOpen] = useState(false);
+  const [userShare, setUserShare] = useState(0);
 
   const fetchHiveData = async () => {
     if (!id) return;
@@ -247,23 +248,30 @@ const HiveDetailPage = () => {
             {expenses.length > 0 ? expenses.map(exp => {
               const perPersonShare = parseFloat(exp.amount) / hive.members.length;
               const currentUserIsPayer = exp.payer.id === user.id;
+              const participant = exp.participants.find(p => p.user.id === user.id);
               
               let userInvolvement;
-              if (hive.members.length > 1) {
-                  if (currentUserIsPayer) {
-                    const amountLent = parseFloat(exp.amount) - perPersonShare;
-                    userInvolvement = (
-                      <p className="text-sm text-green-600 font-semibold">
-                        You lent ${amountLent.toFixed(2)}
-                      </p>
-                    );
-                  } else {
-                    userInvolvement = (
-                      <p className="text-sm text-red-600 font-semibold">
-                        Your share ${perPersonShare.toFixed(2)}
-                      </p>
-                    );
-                  }
+              if (currentUserIsPayer) {
+                const totalAmount = parseFloat(exp.amount);
+                const yourShare = participant ? parseFloat(participant.share) : 0;
+                const amountLent = totalAmount - yourShare;
+                userInvolvement = (
+                  <p className="text-sm text-green-600 font-semibold">
+                    You lent ${amountLent.toFixed(2)}
+                  </p>
+                );
+              } else if (participant) {
+                userInvolvement = (
+                  <p className="text-sm text-red-600 font-semibold">
+                    Your share ${parseFloat(participant.share).toFixed(2)}
+                  </p>
+                );
+              } else {
+                userInvolvement = (
+                  <p className="text-sm text-gray-500 font-semibold">
+                    You are not included
+                  </p>
+                );
               }
 
               return (
