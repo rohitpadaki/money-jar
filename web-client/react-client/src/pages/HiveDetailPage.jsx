@@ -170,7 +170,7 @@ const HiveDetailPage = () => {
             onClick={() => navigate('/dashboard')}
             className="p-2 hover:bg-honey-100 rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-6 h-6 text-gray-600" />
+            <ArrowLeft className="w-6 h-6 text-gray-600 cursor-pointer" />
           </button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{hive.name}</h1>
@@ -287,7 +287,7 @@ const HiveDetailPage = () => {
                   {exp.payer.id === user.id && (
                   <button
                       onClick={() => handleDeleteExpense(exp.id)}
-                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg cursor-pointer"
                     >
                       Delete
                   </button>

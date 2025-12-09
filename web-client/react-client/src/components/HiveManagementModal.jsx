@@ -16,12 +16,12 @@ const HiveManagementModal = ({ isOpen, onClose, hive, currentUser, onAddMember, 
           <h3 className="font-semibold mb-2">Members</h3>
           <ul className="space-y-2">
             {hive.members.map(member => (
-              <li key={member.id} className="flex items-center justify-between">
+              <li key={member.id} className="flex items-center justify-between bg-amber-200 rounded-3xl p-2">
                 <span>{member.username} {member.id === hive.createdBy.id && '(Owner)'}</span>
                 {isOwner && member.id !== currentUser.id && (
                   <button
                     onClick={() => onRemoveMember(member.id)}
-                    className="text-red-500 hover:text-red-700 text-sm"
+                    className="text-red-500 hover:text-red-700 text-sm cursor-pointer"
                   >
                     Remove
                   </button>
