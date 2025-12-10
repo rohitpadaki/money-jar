@@ -82,7 +82,7 @@ const AddExpensePage = () => {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center space-x-4 mb-8">
         <button onClick={() => navigate(`/hive/${hiveId}`)} className="p-2 hover:bg-honey-100 rounded-lg">
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft className="w-6 h-6 text-gray-600 cursor-pointer" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Add Expense to {group.name}</h1>
@@ -132,7 +132,7 @@ const AddExpensePage = () => {
               {group.members.map(member => (
                 <div key={member.id} onClick={() => handleParticipantToggle(member.id)} className={`flex items-center p-2 rounded-lg cursor-pointer ${participants.includes(member.id) ? 'bg-honey-100' : ''}`}>
                   <UserAvatar user={{ name: member.username }} size="md" />
-                  <span className="ml-3 font-medium">{member.username}</span>
+                  <span className="ml-3 font-medium px-2!">{member.username}</span>
                   <div className={`ml-auto w-6 h-6 rounded-full border-2 flex items-center justify-center ${participants.includes(member.id) ? 'border-honey-500 bg-honey-500' : 'border-gray-300'}`}>
                     {participants.includes(member.id) && <div className="w-3 h-3 bg-white rounded-full" />}
                   </div>

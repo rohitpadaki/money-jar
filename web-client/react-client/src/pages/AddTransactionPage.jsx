@@ -151,7 +151,7 @@ const AddTransactionPage = () => {
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
-                  className="input-field flex-grow"
+                  className="input-field grow"
                 >
                   {categories.filter(c => c.type === formData.type).map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -172,7 +172,7 @@ const AddTransactionPage = () => {
                     type="text"
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="input-field flex-grow"
+                    className="input-field grow"
                     placeholder="New category name"
                   />
                   <button type="button" onClick={handleNewCategorySubmit} className="btn-primary">Save</button>

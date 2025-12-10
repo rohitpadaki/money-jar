@@ -179,7 +179,7 @@ const HiveDetailPage = () => {
         </div>
         <button
             onClick={() => setManagementModalOpen(true)}
-            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
           >
             <Settings className="w-6 h-6 text-gray-600" />
         </button>
@@ -307,7 +307,7 @@ const HiveDetailPage = () => {
            <div className="space-y-4">
             {payments.length > 0 ? payments.map(pay => (
               <div key={pay.id} className="card flex items-center">
-                <UserAvatar user={{name: pay.fromUser.username}} size="md" />
+                {/* <UserAvatar user={{name: pay.fromUser.username}} size="md" /> */}
                 <div className="flex-1 mx-4">
                   <p className="font-semibold text-gray-900">{pay.fromUser.username} paid {pay.toUser.username}</p>
                   <p className="text-sm text-gray-600">{pay.note || 'Payment'}</p>
