@@ -65,3 +65,7 @@ export const createCategory = async (categoryData) => {
   const response = await api.post(`${API_URL}/categories`, categoryData, getAuthHeaders());
   return response.data;
 };
+
+export const deleteTransaction = async (transactionId) => {
+  const response = await api.delete(`${API_URL}/transactions/${transactionId}`)
+}
