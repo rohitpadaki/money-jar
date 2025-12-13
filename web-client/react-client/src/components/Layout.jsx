@@ -43,6 +43,7 @@ const Layout = ({ children }) => {
               <Link
                 to="/login"
                 className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                onClick={logout}
                 title="Logout"
               >
                 <LogOut size={20} />
