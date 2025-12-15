@@ -133,7 +133,6 @@ export class ExpenseController {
   }
 
   @ApiOperation({ summary: 'Delete an expense' })
-  @ApiParam({ name: 'groupId', description: 'The ID of the group' })
   @ApiParam({ name: 'expenseId', description: 'The ID of the expense' })
   @ApiOkResponse({
     description: 'Expense successfully deleted',

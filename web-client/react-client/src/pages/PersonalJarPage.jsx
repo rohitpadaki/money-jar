@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, ArrowDownRight, ListFilter as Filter, Search } from 'lucide-react';
-import { getAllTransactions, getTransactionSummary } from '../services/transactionService';
+import { getAllTransactions, getTransactionSummary, deleteTransaction } from '../services/transactionService';
 import { useAuth } from '../context/AuthContext';
 
 
@@ -16,24 +16,24 @@ const PersonalJarPage = () => {
   const [filterType, setFilterType] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [transactionsData, summaryData] = await Promise.all([
+        getAllTransactions(),
+        getTransactionSummary(),
+      ]);
+      setAllTransactions(transactionsData);
+      setSummary(summaryData);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch transaction data.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [transactionsData, summaryData] = await Promise.all([
-          getAllTransactions(),
-          getTransactionSummary(),
-        ]);
-        setAllTransactions(transactionsData);
-        setSummary(summaryData);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch transaction data.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     if (user) {
       fetchData();
@@ -65,6 +65,18 @@ const PersonalJarPage = () => {
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
+
+  const handleDeleteTransaction = async (transactionId) => {
+    if (!window.confirm("Delete this Transaction? This cannot be undone.")) return;
+  
+    try {
+      await deleteTransaction(transactionId);
+      await fetchData(); // refresh list
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete Transaction.");
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -119,7 +131,7 @@ const PersonalJarPage = () => {
                 placeholder="Search transactions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field !pl-10"
+                className="input-field pl-10!"
               />
             </div>
           </div>
@@ -201,15 +213,25 @@ const PersonalJarPage = () => {
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <p className={`text-lg font-bold ${
-                      isIncome ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {isIncome ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {isIncome ? 'received' : 'paid'}
-                    </p>
+
+                  <div className="text-right flex">
+                    <button
+                        onClick={() => handleDeleteTransaction(transaction.id)}
+                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg cursor-pointer"
+                      >
+                        Delete
+                    </button>
+                    <div>
+                      <p className={`text-lg font-bold ${
+                        isIncome ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {isIncome ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {isIncome ? 'received' : 'paid'}
+                      </p>
+
+                    </div>
                   </div>
                 </div>
               );

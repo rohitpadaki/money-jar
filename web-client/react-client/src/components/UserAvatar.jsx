@@ -10,7 +10,7 @@ const UserAvatar = ({ user, size = 'md', className = '' }) => {
 
   return (
     <div className={`${sizes[size]} bg-honey-500 rounded-full flex items-center justify-center text-white font-medium ${className}`}>
-      {user.avatar}
+      {user.name[0].toUpperCase()}
     </div>
   );
 };

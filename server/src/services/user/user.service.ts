@@ -1,46 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/models/user.entity';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/models/user.entity';
+import { PasswordUtility } from '../../utility/password/password.service';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectRepository(User) private userRepo: Repository<User>,
-    ) { }
+  private passwordUtility = new PasswordUtility();
 
-    async getUsers(): Promise<User[]> {
-        return this.userRepo.find();
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) { }
+
+  async getUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  async addUser(userData: { username: string; name: string; password: string }): Promise<User> {
+    const user = this.userRepository.create(userData);
+    return this.userRepository.save(user);
+  }
+
+  async updateUser(userId: string, user: Partial<User>): Promise<User | null> {
+    await this.userRepository.update(userId, user);
+    return this.userRepository.findOneBy({ id: userId });
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.userRepository.delete(userId);
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { username } });
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { id } });
+  }
+
+  async validateUser(username: string, password: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { username } });
+
+    if (user && user.password === password) {
+      return user;
     }
 
-    async addUser(newUser: Partial<User>): Promise<User> {
-        const user = this.userRepo.create(newUser); // creates entity instance
-        return this.userRepo.save(user);            // inserts into DB
-
-    }
-
-    async updateUser(userId: string, user: Partial<User>): Promise<User | null> {
-        await this.userRepo.update(userId, user);
-        return this.userRepo.findOneBy({ id: userId });
-    }
-
-    async deleteUser(userId: string): Promise<void> {
-        await this.userRepo.delete(userId);
-    }
-
-    async findByUsername(username: string): Promise<User | null> {
-        return this.userRepo.findOneBy({ username });
-    }
-
-
-    async validateUser(username: string, password: string): Promise<User | null> {
-        const user = await this.userRepo.findOne({ where: { username } });
-
-        if (user && user.password === password) {
-            return user;
-        }
-
-        return null;
-    }
+    return null;
+  }
 
 }

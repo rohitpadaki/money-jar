@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, UseGuards, Delete, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
 import type { User } from 'src/models/user.entity';
 import { UserService } from 'src/services/user/user.service';
 import { PublicUserDto } from './dto/public-user.dto';
 import { PrivateUserDto } from './dto/private-user.dto';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -42,6 +43,7 @@ export class UserController {
     @ApiParam({ name: 'username', description: 'The username of the user' })
     async findUser(@Param("username") username:string){
         let user = await this.userService.findByUsername(username);
+        // console.log(user);
         if(!user) throw new NotFoundException('User does not exist');
 
         return new PublicUserDto(user);

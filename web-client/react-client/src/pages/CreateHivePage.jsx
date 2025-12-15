@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, X } from 'lucide-react';
 import UserAvatar from '../components/UserAvatar';
-import { mockUsers } from '../data/mockData';
+import { createGroup, getAllUsers, addMemberToGroup } from '../services/groupService';
+import { useAuth } from '../context/AuthContext';
 
 const CreateHivePage = () => {
+  const { user: currentUser } = useAuth();
   const [hiveName, setHiveName] = useState('');
+  const [allUsers, setAllUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const filteredUsers = mockUsers.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const users = await getAllUsers();
+        // Exclude the current user from the list of users to add
+        setAllUsers(users.filter(u => u.id !== currentUser.sub));
+      } catch (err) {
+        console.error("Failed to fetch users", err);
+        setError("Could not load users list.");
+      }
+    };
+    fetchUsers();
+  }, [currentUser]);
+
+  const filteredUsers = allUsers.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleUserToggle = (user) => {
@@ -23,10 +41,32 @@ const CreateHivePage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock creation - redirect to hive detail
-    navigate('/dashboard');
+    if (!hiveName.trim()) {
+      setError("Hive name is required.");
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      // Step 1: Create the group
+      const newGroup = await createGroup(hiveName);
+
+      // Step 2: Add selected members
+      for (const user of selectedUsers) {
+        await addMemberToGroup(newGroup.id, user.id);
+      }
+
+      // Step 3: Navigate on success
+      navigate('/dashboard');
+
+    } catch (err) {
+      setError(err.response?.data?.message || 'An error occurred.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,8 +117,8 @@ const CreateHivePage = () => {
                   key={user.id}
                   className="flex items-center space-x-2 bg-honey-100 rounded-full px-3 py-2"
                 >
-                  <UserAvatar user={user} size="sm" />
-                  <span className="text-sm font-medium text-gray-900">{user.name}</span>
+                  <UserAvatar user={{ name: user.username }} size="sm" />
+                  <span className="text-sm font-medium text-gray-900">{user.username}</span>
                   <button
                     type="button"
                     onClick={() => handleUserToggle(user)}
@@ -96,18 +136,16 @@ const CreateHivePage = () => {
         <div className="card">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Members</h2>
           
-          {/* Search */}
           <div className="mb-4">
             <input
               type="text"
-              placeholder="Search users by name or email..."
+              placeholder="Search users by username..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input-field"
             />
           </div>
 
-          {/* User List */}
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {filteredUsers.map((user) => {
               const isSelected = selectedUsers.find(u => u.id === user.id);
@@ -119,10 +157,10 @@ const CreateHivePage = () => {
                   }`}
                   onClick={() => handleUserToggle(user)}
                 >
-                  <UserAvatar user={user} size="md" />
+                  <UserAvatar user={{ name: user.username }} size="md" />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{user.name}</p>
-                    <p className="text-sm text-gray-600">{user.email}</p>
+                    <p className="font-medium text-gray-900">{user.username}</p>
+                    {/* Assuming email is not available from /users endpoint, can be adjusted */}
                   </div>
                   <div className="flex items-center">
                     {isSelected ? (
@@ -145,6 +183,9 @@ const CreateHivePage = () => {
           )}
         </div>
 
+        {/* Error Display */}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
         {/* Submit */}
         <div className="flex space-x-4">
           <button
@@ -156,10 +197,10 @@ const CreateHivePage = () => {
           </button>
           <button
             type="submit"
-            disabled={!hiveName.trim() || selectedUsers.length === 0}
+            disabled={!hiveName.trim() || loading}
             className="flex-1 btn-primary py-3 text-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Hive
+            {loading ? 'Creating...' : 'Create Hive'}
           </button>
         </div>
       </form>
