@@ -19,8 +19,10 @@ const CreateHivePage = () => {
     const fetchUsers = async () => {
       try {
         const users = await getAllUsers();
+        // console.log(users)
         // Exclude the current user from the list of users to add
-        setAllUsers(users.filter(u => u.id !== currentUser.sub));
+        setAllUsers(users.filter(u => u.id !== currentUser.id));
+        // console.log(currentUser)
       } catch (err) {
         console.error("Failed to fetch users", err);
         setError("Could not load users list.");
@@ -77,7 +79,7 @@ const CreateHivePage = () => {
           onClick={() => navigate('/dashboard')}
           className="p-2 hover:bg-honey-100 rounded-lg transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft className="w-6 h-6 text-gray-600 cursor-pointer" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Create New Hive</h1>
@@ -122,7 +124,7 @@ const CreateHivePage = () => {
                   <button
                     type="button"
                     onClick={() => handleUserToggle(user)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-500 hover:text-gray-700 cursor-pointer"
                   >
                     <X size={16} />
                   </button>
