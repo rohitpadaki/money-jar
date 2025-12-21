@@ -14,15 +14,49 @@ const RegisterPage = () => {
     confirmPassword: ''
   });
   const [error, setError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [usernameError, setUsernameError] = useState(null); // Added for potential username validation feedback
   const navigate = useNavigate();
+
+  // Password validation regex and messages
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,16}$/;
+  const passwordRequirements = [
+    '8-16 characters long',
+    'at least one uppercase letter',
+    'at least one lowercase letter',
+    'at least one number',
+    'at least one special character'
+  ];
+
+  const validatePassword = (password) => {
+    if (!password) {
+      return 'Password is required.';
+    }
+    if (password.length < 8 || password.length > 16) {
+      return 'Password must be 8-16 characters long.';
+    }
+    if (!passwordRegex.test(password)) {
+      return `Password must contain ${passwordRequirements.slice(1).join(', ')}.`;
+    }
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setPasswordError(null);
+    setUsernameError(null);
 
-    // (Optional) Client-side validation for matching passwords
+    // Client-side validation for matching passwords
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
+    // Client-side validation for password complexity
+    const clientPasswordError = validatePassword(formData.password);
+    if (clientPasswordError) {
+      setPasswordError(clientPasswordError);
       return;
     }
 
@@ -40,19 +74,57 @@ const RegisterPage = () => {
         setError(response.data.message || "Registration failed");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "An error occurred. Please try again."
-      );
+      // Check if the error response contains validation messages from the backend
+      const backendErrors = err.response?.data?.message;
+
+      if (Array.isArray(backendErrors)) {
+        // Handle an array of error messages (common with class-validator)
+        let displayError = '';
+        backendErrors.forEach(msg => {
+          if (msg.includes('password')) { // Look for password-related errors
+            setPasswordError(msg);
+          } else if (msg.includes('username')) { // Look for username-related errors
+            setUsernameError(msg);
+          } else {
+            displayError += msg + ' ';
+          }
+        });
+        if (displayError) setError(displayError.trim());
+        if (!passwordError && !usernameError && !displayError) {
+          setError("An error occurred during registration. Please check your inputs.");
+        }
+      } else if (typeof backendErrors === 'string') {
+        // Handle a single string error message
+        if (backendErrors.includes('password')) {
+          setPasswordError(backendErrors);
+        } else if (backendErrors.includes('username')) {
+          setUsernameError(backendErrors);
+        } else {
+          setError(backendErrors);
+        }
+      } else {
+        // Fallback for other error formats
+        setError("An error occurred. Please try again.");
+      }
     }
   };
 
-
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+
+    // Client-side validation feedback as user types (optional, but good UX)
+    if (name === 'password') {
+      const errorMsg = validatePassword(value);
+      setPasswordError(errorMsg);
+    }
+    // You could add similar validation for username if needed
+    if (name === 'username') {
+        setUsernameError(null); // Clear username error when typing, re-validate on submit
+    }
   };
 
   return (
@@ -105,8 +177,6 @@ const RegisterPage = () => {
                 <input
                   id="username"
                   name="username"
-                  // type="email"
-                  // autoComplete="email"
                   required
                   className="input-field !pl-10"
                   placeholder="Enter your Username"
@@ -114,6 +184,7 @@ const RegisterPage = () => {
                   onChange={handleChange}
                 />
               </div>
+              {usernameError && <p className="mt-1 text-sm text-red-600">{usernameError}</p>}
             </div>
 
             {/* Password Field */}
@@ -146,6 +217,7 @@ const RegisterPage = () => {
                   </button>
                 </div>
               </div>
+              {passwordError && <p className="mt-1 text-sm text-red-600">{passwordError}</p>}
             </div>
 
             {/* Confirm Password Field */}
@@ -181,27 +253,6 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          {/* Terms and Conditions */}
-          {/* <div className="flex items-center">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              required
-              className="h-4 w-4 text-honey-500 focus:ring-honey-500 border-honey-300 rounded"
-            />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-              I agree to the{' '}
-              <a href="#" className="text-honey-600 hover:text-honey-500">
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-honey-600 hover:text-honey-500">
-                Privacy Policy
-              </a>
-            </label>
-          </div> */}
-
           {/* Submit Button */}
           <div>
             <button
@@ -210,7 +261,7 @@ const RegisterPage = () => {
             >
               Create your jar
             </button>
-            {error && <div className="mb-2 text-red-500">{error}</div>}
+            {error && <div className="mt-3 text-red-500">{error}</div>}
           </div>
 
           {/* Login Link */}
