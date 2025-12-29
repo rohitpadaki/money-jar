@@ -3,10 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, DollarSign, Edit2 } from 'lucide-react';
 import { getGroupDetails } from '../services/groupService';
 import { createExpense } from '../services/expenseService';
+import { useAuth } from '../context/AuthContext';
 import UserAvatar from '../components/UserAvatar';
 
 const AddExpensePage = () => {
   const { hiveId } = useParams();
+  const { user: currentUser } = useAuth();
+  
   const navigate = useNavigate();
 
   const [group, setGroup] = useState(null);
@@ -129,7 +132,9 @@ const AddExpensePage = () => {
 
           {splitType === 'SELECTED' && (
             <div className="mt-4 space-y-2">
-              {group.members.map(member => (
+              {group.members
+              .filter(u => u.id !== currentUser.id)
+              .map(member => (
                 <div key={member.id} onClick={() => handleParticipantToggle(member.id)} className={`flex items-center p-2 rounded-lg cursor-pointer ${participants.includes(member.id) ? 'bg-honey-100' : ''}`}>
                   <UserAvatar user={{ name: member.username }} size="md" />
                   <span className="ml-3 font-medium px-2!">{member.username}</span>
@@ -140,7 +145,7 @@ const AddExpensePage = () => {
               ))}
             </div>
           )}
-          <p className="text-sm text-gray-500 mt-3 text-center">Split by {splitType === 'ALL' ? 'everyone' : `${participants.length} people`}.</p>
+          <p className="text-sm text-gray-500 mt-3 text-center">Split by {splitType === 'ALL' ? 'everyone' : `${participants.length + 1} people (You are included)`}.</p>
         </div>
         
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
