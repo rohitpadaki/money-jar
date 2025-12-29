@@ -61,9 +61,11 @@ const DashboardPage = () => {
                 <HoneyJarIcon size={32} />
                 <h2 className="text-xl font-semibold text-gray-900">Personal Jar</h2>
               </div>
-              <span className='btn-primary'>
-                <Link to="/view-transactions">View All Transactions</Link>
-              </span>
+                <Link to="/view-transactions">
+                  <span className='btn-primary'>
+                      View All Transactions
+                  </span>
+                </Link>
             </div>
 
             <div className="mb-6">
