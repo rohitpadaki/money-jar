@@ -220,7 +220,7 @@ const HiveDetailPage = () => {
           className="btn-secondary">Pay Someone</button>
           <button
             onClick={() => navigate(`/hive/${id}/settle-up`)}
-            className="btn-secondary">Settle Up</button>
+            className="btn-secondary">Settlement</button>
         </div>
         {/* <div className="flex -space-x-2">
           {hive.members.map((member) => (

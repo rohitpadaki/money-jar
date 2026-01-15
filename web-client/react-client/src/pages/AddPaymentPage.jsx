@@ -64,7 +64,7 @@ const AddPaymentPage = () => {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center space-x-4 mb-8">
         <button onClick={() => navigate(`/hive/${hiveId}`)} className="p-2 hover:bg-honey-100 rounded-lg">
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft className="w-6 h-6 text-gray-600 cursor-pointer" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Record a Payment in {group.name}</h1>
@@ -108,7 +108,9 @@ const AddPaymentPage = () => {
                 required
               >
                 <option value="">Select a member</option>
-                {otherMembers.map(member => (
+                {otherMembers
+                .filter(member => member.id !== currentUser.id)
+                .map(member => (
                   <option key={member.id} value={member.id}>
                     {member.username}
                   </option>
