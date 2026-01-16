@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, DollarSign, Plus } from 'lucide-react';
+import { ArrowLeft, DollarSign, Plus, Minus } from 'lucide-react';
 import { addExpense, getCategories, createCategory } from '../services/transactionService';
 import { useAuth } from '../context/AuthContext';
 
@@ -88,7 +88,7 @@ const AddTransactionPage = () => {
           onClick={() => navigate(`/dashboard`)}
           className="p-2 hover:bg-honey-100 rounded-lg transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft className="w-6 h-6 text-gray-600 cursor-pointer" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Add Personal Transactions</h1>
@@ -146,24 +146,35 @@ const AddTransactionPage = () => {
                 Category
               </label>
               <div className="flex items-center space-x-2">
-                <select
+              <select
                   id="categoryId"
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
                   className="input-field grow"
                 >
+                  <option value="">No category</option>
                   {categories.filter(c => c.type === formData.type).map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
                 <button
                   type="button"
-                  onClick={() => setShowNewCategory(!showNewCategory)}
+                  onClick={() => {
+                    if (formData.categoryId) {
+                      setFormData(prev => ({ ...prev, categoryId: '' }));
+                    } else {
+                      setShowNewCategory(!showNewCategory);
+                    }
+                  }}
                   className="btn-secondary p-2"
-                  title="Add new category"
+                  title={formData.categoryId ? "Remove selected category" : "Add new category"}
                 >
-                  <Plus className="w-5 h-5" />
+                  {formData.categoryId ? (
+                    <Minus className="w-5 h-5" />
+                  ) : (
+                    <Plus className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               {showNewCategory && (
