@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, DollarSign, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, DollarSign, Plus, Minus, Settings} from 'lucide-react';
 import { addExpense, getCategories, createCategory } from '../services/transactionService';
 import { useAuth } from '../context/AuthContext';
+import CategoryManagementModal from '../components/CategoryManagementModal';
 
 const AddTransactionPage = () => {
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const [categories, setCategories] = useState([]);
@@ -154,7 +156,7 @@ const AddTransactionPage = () => {
                   className="input-field grow"
                 >
                   <option value="">No category</option>
-                  {categories.filter(c => c.type === formData.type).map(cat => (
+                  {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
@@ -206,6 +208,13 @@ const AddTransactionPage = () => {
                 <option value="income">Income</option>
               </select>
             </div>
+
+            {/* Category Management Button */}
+            <button onClick={() => setShowCategoryModal(true)} className="items-center space-x-2 btn-secondary">
+              <Settings size={18} />
+              <span>Categories</span>
+            </button>
+            <CategoryManagementModal isOpen={showCategoryModal} onClose={() => setShowCategoryModal(false)} currentUser={user} />
 
             <div className="md:col-span-2">
               <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight} from 'lucide-react';
 import HoneyJarIcon from '../components/HoneyJarIcon';
 import HexagonIcon from '../components/HexagonIcon';
 import UserAvatar from '../components/UserAvatar';
@@ -9,6 +9,7 @@ import { getBalance, getAllTransactions } from '../services/transactionService';
 import { getMyGroups } from '../services/groupService';
 
 const DashboardPage = () => {
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const { user } = useAuth();
   const [totalBalance, setTotalBalance] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState([]);
