@@ -51,14 +51,18 @@ import { PaymentController } from './controllers/payment/payment.controller';
     TransactionModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,    // change if your DB is running in Docker/remote
-      port: parseInt(String(process.env.DB_PORT)),
-      username: process.env.DB_USERNAME, // your postgres username
-      password: process.env.DB_PASSWORD, // your postgres password
-      database: process.env.DB_NAME, // database name
-      entities: [User, Transaction, Category, Group, GroupMember],     // register your entity here
-      autoLoadEntities: true, 
-      synchronize: true,    // auto create tables (disable in production!)
+
+      url: process.env.DATABASE_URL || undefined, // use Supabase URI if present
+      host: process.env.DATABASE_URL ? undefined : process.env.DB_HOST,
+      port: process.env.DATABASE_URL ? undefined : parseInt(process.env.DB_PORT || '5432'),
+      username: process.env.DATABASE_URL ? undefined : process.env.DB_USERNAME,
+      password: process.env.DATABASE_URL ? undefined : process.env.DB_PASSWORD,
+      database: process.env.DATABASE_URL ? undefined : process.env.DB_NAME,
+
+      entities: [User, Transaction, Category, Group, GroupMember],
+      autoLoadEntities: true,
+      synchronize: true, // <-- this will auto-create tables
+      ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
     }),
     TransactionSummaryModule,
     GroupsModule,
