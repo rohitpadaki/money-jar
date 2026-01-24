@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:3001'], // Use the port your React dev server runs on
+    origin: ['http://localhost:5173', 'http://localhost:3001', 'https://money-jar-client.onrender.com'], // Use the port your React dev server runs on
     credentials: true, // allow cookies (optional, only if you're using cookies for auth)
   });
   const config = new DocumentBuilder()
