@@ -61,7 +61,7 @@ import { PaymentController } from './controllers/payment/payment.controller';
 
       entities: [User, Transaction, Category, Group, GroupMember],
       autoLoadEntities: true,
-      synchronize: true, // <-- this will auto-create tables
+      synchronize: process.env.INIT_DB === 'true', // <-- this will auto-create tables
       ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
     }),
     TransactionSummaryModule,
