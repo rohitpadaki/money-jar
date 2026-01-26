@@ -15,7 +15,7 @@ The backend is built with [NestJS](https://nestjs.com/) and is in a good state. 
 
 ### Frontend
 
-The frontend development will be started soon. We are planning to build a mobile client and a web client.
+Frontend is built with React Vite
 
 ## Technologies Used
 
