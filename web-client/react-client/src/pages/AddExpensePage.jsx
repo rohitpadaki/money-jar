@@ -9,7 +9,7 @@ import UserAvatar from '../components/UserAvatar';
 const AddExpensePage = () => {
   const { hiveId } = useParams();
   const { user: currentUser } = useAuth();
-  
+
   const navigate = useNavigate();
 
   const [group, setGroup] = useState(null);
@@ -67,7 +67,7 @@ const AddExpensePage = () => {
       note,
       splitType,
       // Only include participants if the split type is 'SELECTED'
-      participants: splitType === 'SELECTED' ? participants : undefined,
+      participants: splitType === 'SELECTED' ? [...participants, currentUser.id] : undefined,
     };
 
     try {
@@ -133,23 +133,23 @@ const AddExpensePage = () => {
           {splitType === 'SELECTED' && (
             <div className="mt-4 space-y-2">
               {group.members
-              .filter(u => u.id !== currentUser.id)
-              .map(member => (
-                <div key={member.id} onClick={() => handleParticipantToggle(member.id)} className={`flex items-center p-2 rounded-lg cursor-pointer ${participants.includes(member.id) ? 'bg-honey-100' : ''}`}>
-                  <UserAvatar user={{ name: member.username }} size="md" />
-                  <span className="ml-3 font-medium px-2!">{member.username}</span>
-                  <div className={`ml-auto w-6 h-6 rounded-full border-2 flex items-center justify-center ${participants.includes(member.id) ? 'border-honey-500 bg-honey-500' : 'border-gray-300'}`}>
-                    {participants.includes(member.id) && <div className="w-3 h-3 bg-white rounded-full" />}
+                .filter(u => u.id !== currentUser.id)
+                .map(member => (
+                  <div key={member.id} onClick={() => handleParticipantToggle(member.id)} className={`flex items-center p-2 rounded-lg cursor-pointer ${participants.includes(member.id) ? 'bg-honey-100' : ''}`}>
+                    <UserAvatar user={{ name: member.username }} size="md" />
+                    <span className="ml-3 font-medium px-2!">{member.username}</span>
+                    <div className={`ml-auto w-6 h-6 rounded-full border-2 flex items-center justify-center ${participants.includes(member.id) ? 'border-honey-500 bg-honey-500' : 'border-gray-300'}`}>
+                      {participants.includes(member.id) && <div className="w-3 h-3 bg-white rounded-full" />}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
           <p className="text-sm text-gray-500 mt-3 text-center">Split by {splitType === 'ALL' ? 'everyone' : `${participants.length + 1} people (You are included)`}.</p>
         </div>
-        
+
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        
+
         <button type="submit" disabled={loading} className="w-full btn-primary py-3 text-center disabled:opacity-50">
           {loading ? 'Adding...' : 'Add Expense'}
         </button>

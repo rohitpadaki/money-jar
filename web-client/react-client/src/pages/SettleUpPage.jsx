@@ -102,7 +102,7 @@ const SettleUpPage = () => {
           onClick={() => navigate(`/hive/${id}`)}
           className="p-2 hover:bg-honey-100 rounded-lg transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft className="w-6 h-6 text-gray-600 cursor-pointer" />
         </button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Settle Up</h1>
