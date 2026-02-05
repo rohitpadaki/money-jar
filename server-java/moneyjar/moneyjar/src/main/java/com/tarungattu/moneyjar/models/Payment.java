@@ -24,15 +24,15 @@ public class Payment {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "groupId")
+    @JoinColumn(name = "\"groupId\"")
     private Group group;
 
     @ManyToOne
-    @JoinColumn(name = "fromUserId")
+    @JoinColumn(name = "\"fromUserId\"")
     private User fromUser;
 
     @ManyToOne
-    @JoinColumn(name = "toUserId")
+    @JoinColumn(name = "\"toUserId\"")
     private User toUser;
 
     @Column(precision = 12, scale = 2, nullable = false)

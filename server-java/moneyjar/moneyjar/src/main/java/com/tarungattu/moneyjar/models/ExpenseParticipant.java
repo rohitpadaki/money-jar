@@ -22,11 +22,11 @@ public class ExpenseParticipant {
     private UUID id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "expenseId")
+    @JoinColumn(name = "\"expenseId\"")
     private Expense expense;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "\"userId\"")
     private User user;
 
     @Column(precision = 12, scale = 2, nullable = false)

@@ -28,11 +28,11 @@ public class Group {
     private String name;
 
     @CreationTimestamp
-    @Column(updatable = false, nullable = false)
+    @Column(name = "\"createdAt\"", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "createdById")
+    @JoinColumn(name = "\"createdById\"")
     private User createdBy;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)

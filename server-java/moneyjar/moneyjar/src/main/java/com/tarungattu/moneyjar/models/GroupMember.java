@@ -23,14 +23,14 @@ public class GroupMember {
     private UUID id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "groupId")
+    @JoinColumn(name = "\"groupId\"")
     private Group group;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "\"userId\"")
     private User user;
 
     @CreationTimestamp
-    @Column(updatable = false, nullable = false)
+    @Column(name = "\"joinedAt\"", updatable = false, nullable = false)
     private LocalDateTime joinedAt;
 }

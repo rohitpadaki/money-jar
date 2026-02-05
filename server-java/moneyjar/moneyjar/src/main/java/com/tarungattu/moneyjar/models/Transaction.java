@@ -39,10 +39,10 @@ public class Transaction {
     private LocalDateTime date;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "\"userId\"")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId")
+    @JoinColumn(name = "\"categoryId\"")
     private Category category;
 }

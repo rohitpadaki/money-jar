@@ -26,11 +26,11 @@ public class Expense {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "groupId")
+    @JoinColumn(name = "\"groupId\"")
     private Group group;
 
     @ManyToOne
-    @JoinColumn(name = "payerId")
+    @JoinColumn(name = "\"payerId\"")
     private User payer;
 
     @Column(nullable = false, precision = 12, scale = 2)
@@ -40,11 +40,11 @@ public class Expense {
     private String note;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "splitType", nullable = false) // Assuming camelCase column name based on TypeORM default or custom config
+    @Column(name = "\"splitType\"", nullable = false)
     private SplitType splitType = SplitType.ALL;
 
     @CreationTimestamp
-    @Column(updatable = false, nullable = false)
+    @Column(name = "\"createdAt\"", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
 

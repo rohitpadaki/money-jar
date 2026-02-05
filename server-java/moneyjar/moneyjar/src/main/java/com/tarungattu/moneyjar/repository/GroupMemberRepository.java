@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface GroupMemberRepository extends JpaRepository<GroupMember, UUID> {
+    java.util.List<GroupMember> findByUserId(UUID userId);
 }
