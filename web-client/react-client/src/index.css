@@ -1169,3 +1169,30 @@ a {
   outline: 2px solid var(--honey-500);
   outline-offset: 2px;
 }
+/* Added by Assistant to fix responsive layout issues */
+@media (min-width: 640px) {
+  .sm\:flex-row {
+    flex-direction: row;
+  }
+  .sm\:items-center {
+    align-items: center;
+  }
+  .sm\:justify-end {
+    justify-content: flex-end;
+  }
+  .sm\:gap-0 {
+    gap: 0;
+  }
+  .sm\:w-auto {
+    width: auto;
+  }
+  .sm\:pl-0 {
+    padding-left: 0;
+  }
+  .sm\:text-base {
+    font-size: 1rem;
+  }
+  .sm\:inline-block {
+    display: inline-block;
+  }
+}

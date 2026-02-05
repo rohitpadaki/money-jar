@@ -43,14 +43,14 @@ const PersonalJarPage = () => {
 
   const filteredTransactions = useMemo(() => {
     return allTransactions.filter(transaction => {
-    const matchesSearch = (transaction.note || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'all' || transaction.type.toLowerCase() === filterType;
-    const categoryName = transaction.category ? transaction.category.name : 'Uncategorized';
-    const matchesCategory = filterCategory === 'all' || categoryName === filterCategory;
-    
-    return matchesSearch && matchesType && matchesCategory;
-  })
-}, [allTransactions, searchTerm, filterType, filterCategory]);
+      const matchesSearch = (transaction.note || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = filterType === 'all' || transaction.type.toLowerCase() === filterType;
+      const categoryName = transaction.category ? transaction.category.name : 'Uncategorized';
+      const matchesCategory = filterCategory === 'all' || categoryName === filterCategory;
+
+      return matchesSearch && matchesType && matchesCategory;
+    })
+  }, [allTransactions, searchTerm, filterType, filterCategory]);
 
 
   const categories = useMemo(() => {
@@ -68,7 +68,7 @@ const PersonalJarPage = () => {
 
   const handleDeleteTransaction = async (transactionId) => {
     if (!window.confirm("Delete this Transaction? This cannot be undone.")) return;
-  
+
     try {
       await deleteTransaction(transactionId);
       await fetchData(); // refresh list
@@ -105,13 +105,13 @@ const PersonalJarPage = () => {
             {summary.totalBalance >= 0 ? "You're owed" : 'You owe'}
           </p> */}
         </div>
-        
+
         <div className="card text-center">
           <p className="text-sm text-gray-600 mb-1">Total Received</p>
           <p className="text-2xl font-bold text-green-600">${summary.totalIncome.toFixed(2)}</p>
           <p className="text-xs text-gray-500">Payments received</p>
         </div>
-        
+
         <div className="card text-center">
           <p className="text-sm text-gray-600 mb-1">Total Spent</p>
           <p className="text-2xl font-bold text-red-600">${summary.totalExpenses.toFixed(2)}</p>
@@ -181,50 +181,47 @@ const PersonalJarPage = () => {
               const isIncome = transaction.type === 'income';
               const categoryName = transaction.category ? transaction.category.name : 'Uncategorized';
               return (
-                <div key={transaction.id} className="flex items-center justify-between p-4 bg-honey-50 rounded-lg hover:bg-honey-100 transition-colors">
-                  <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-full ${
-                      isIncome ? 'bg-green-100' : 'bg-red-100'
-                    }`}>
+                <div key={transaction.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-honey-50 rounded-lg hover:bg-honey-100 transition-colors gap-3 sm:gap-0">
+                  <div className="flex items-center space-x-4 w-full sm:w-auto">
+                    <div className={`p-3 rounded-full flex-shrink-0 ${isIncome ? 'bg-green-100' : 'bg-red-100'
+                      }`}>
                       {isIncome ? (
                         <ArrowUpRight className="w-5 h-5 text-green-600" />
                       ) : (
                         <ArrowDownRight className="w-5 h-5 text-red-600" />
                       )}
                     </div>
-                    
-                    <div className="flex-1">
+
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <p className="font-medium text-gray-900">{transaction.note || 'Transaction'}</p>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          !isIncome 
-                            ? 'bg-red-100 text-red-700' 
+                        <p className="font-medium text-gray-900 truncate">{transaction.note || 'Transaction'}</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${!isIncome
+                            ? 'bg-red-100 text-red-700'
                             : 'bg-green-100 text-green-700'
-                        }`}>
+                          }`}>
                           {transaction.type.toLowerCase()}
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center space-x-4 text-sm text-gray-600">
                         <span>{new Date(transaction.date).toLocaleDateString()}</span>
                         <span>•</span>
-                        <span>{categoryName}</span>
+                        <span className="truncate">{categoryName}</span>
                       </div>
                     </div>
                   </div>
 
 
-                  <div className="text-right flex">
+                  <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto pl-14 sm:pl-0">
                     <button
-                        onClick={() => handleDeleteTransaction(transaction.id)}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg cursor-pointer"
-                      >
-                        Delete
+                      onClick={() => handleDeleteTransaction(transaction.id)}
+                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg cursor-pointer mr-2"
+                    >
+                      Delete
                     </button>
-                    <div>
-                      <p className={`text-lg font-bold ${
-                        isIncome ? 'text-green-600' : 'text-red-600'
-                      }`}>
+                    <div className="text-right">
+                      <p className={`text-lg font-bold ${isIncome ? 'text-green-600' : 'text-red-600'
+                        }`}>
                         {isIncome ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                       </p>
                       <p className="text-xs text-gray-500">

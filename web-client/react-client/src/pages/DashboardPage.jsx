@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, ArrowUpRight, ArrowDownRight} from 'lucide-react';
+import { Plus, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import HoneyJarIcon from '../components/HoneyJarIcon';
 import HexagonIcon from '../components/HexagonIcon';
 import UserAvatar from '../components/UserAvatar';
@@ -57,16 +57,16 @@ const DashboardPage = () => {
         {/* Personal Jar Section (No changes here) */}
         <div className="col-span-1">
           <div className="card">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 sm:gap-0">
               <div className='flex items-center space-x-3'>
                 <HoneyJarIcon size={32} />
                 <h2 className="text-xl font-semibold text-gray-900">Personal Jar</h2>
               </div>
-                <Link to="/view-transactions">
-                  <span className='btn-primary'>
-                      View All Transactions
-                  </span>
-                </Link>
+              <Link to="/view-transactions">
+                <span className='btn-primary text-sm sm:text-base'>
+                  View All Transactions
+                </span>
+              </Link>
             </div>
 
             <div className="mb-6">
@@ -75,14 +75,14 @@ const DashboardPage = () => {
                 <p className="text-lg">Loading...</p>
               ) : error ? (
                 <p className="text-red-500">{error}</p>
-              ) : 
-              (
-                <>
-                  <p className={`text-3xl font-bold ${totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ${Math.abs(totalBalance).toFixed(2)}
-                  </p>
-                </>
-              )
+              ) :
+                (
+                  <>
+                    <p className={`text-3xl font-bold ${totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      ${Math.abs(totalBalance).toFixed(2)}
+                    </p>
+                  </>
+                )
               }
             </div>
 
@@ -91,7 +91,7 @@ const DashboardPage = () => {
               {loading ? (
                 <p>Loading...</p>
               ) : error ? (
-                 <p className="text-red-500">{error}</p>
+                <p className="text-red-500">{error}</p>
               ) : recentTransactions.length > 0 ? (
                 <div className="space-y-3">
                   {recentTransactions.slice(0, 3).map((transaction) => {
@@ -163,7 +163,7 @@ const DashboardPage = () => {
 
                       <HexagonIcon size={24} />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{hive.memberCount} members</span>
                       <span className="text-xs text-gray-500">
