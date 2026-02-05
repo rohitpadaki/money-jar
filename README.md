@@ -39,7 +39,7 @@ Frontend is built with React Vite
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/your-repository.git
+    git clone https://github.com/rohitpadaki/money-jar
     ```
 
 2.  **Navigate to the `server` directory and install dependencies:**
