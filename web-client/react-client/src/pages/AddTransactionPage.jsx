@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, DollarSign, Plus, Minus, Settings} from 'lucide-react';
+import { ArrowLeft, DollarSign, Plus, Minus, Settings } from 'lucide-react';
 import { addExpense, getCategories, createCategory } from '../services/transactionService';
 import { useAuth } from '../context/AuthContext';
 import CategoryManagementModal from '../components/CategoryManagementModal';
@@ -19,7 +19,7 @@ const AddTransactionPage = () => {
     note: '',
     amount: '',
     categoryId: '',
-    type: 'expense', 
+    type: 'expense',
     date: new Date().toISOString().split('T')[0]
   });
 
@@ -43,7 +43,7 @@ const AddTransactionPage = () => {
   const handleNewCategorySubmit = async () => {
     if (!newCategoryName.trim()) return;
     try {
-      const newCategory = await createCategory({ 
+      const newCategory = await createCategory({
         name: newCategoryName,
         type: formData.type // Link category type to transaction type
       });
@@ -102,7 +102,7 @@ const AddTransactionPage = () => {
         {/* Expense Details */}
         <div className="card">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Transaction Details</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-2">
@@ -148,7 +148,7 @@ const AddTransactionPage = () => {
                 Category
               </label>
               <div className="flex items-center space-x-2">
-              <select
+                <select
                   id="categoryId"
                   name="categoryId"
                   value={formData.categoryId}
@@ -210,7 +210,7 @@ const AddTransactionPage = () => {
             </div>
 
             {/* Category Management Button */}
-            <button onClick={() => setShowCategoryModal(true)} className="items-center space-x-2 btn-secondary">
+            <button type="button" onClick={() => setShowCategoryModal(true)} className="items-center space-x-2 btn-secondary">
               <Settings size={18} />
               <span>Categories</span>
             </button>
