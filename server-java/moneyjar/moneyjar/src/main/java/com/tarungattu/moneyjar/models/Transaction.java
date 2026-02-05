@@ -36,10 +36,12 @@ public class Transaction {
 
     @CreationTimestamp
     @Column(columnDefinition = "timestamp", updatable = false, nullable = false)
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "\"userId\"")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"password", "roles"})
     private User user;
 
     @ManyToOne

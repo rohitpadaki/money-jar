@@ -27,6 +27,7 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "\"groupId\"")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"members", "createdBy"})
     private Group group;
 
     @ManyToOne
@@ -45,9 +46,10 @@ public class Expense {
 
     @CreationTimestamp
     @Column(name = "\"createdAt\"", updatable = false, nullable = false)
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
 
-    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ExpenseParticipant> participants;
 }

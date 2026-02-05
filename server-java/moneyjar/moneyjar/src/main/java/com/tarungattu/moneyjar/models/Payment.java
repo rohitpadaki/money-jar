@@ -25,6 +25,7 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "\"groupId\"")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"members", "createdBy"})
     private Group group;
 
     @ManyToOne
@@ -40,6 +41,7 @@ public class Payment {
 
     @CreationTimestamp
     @Column(updatable = false, nullable = false)
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
 
     @Column

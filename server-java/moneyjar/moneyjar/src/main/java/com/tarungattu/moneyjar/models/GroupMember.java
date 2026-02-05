@@ -32,5 +32,6 @@ public class GroupMember {
 
     @CreationTimestamp
     @Column(name = "\"joinedAt\"", updatable = false, nullable = false)
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime joinedAt;
 }

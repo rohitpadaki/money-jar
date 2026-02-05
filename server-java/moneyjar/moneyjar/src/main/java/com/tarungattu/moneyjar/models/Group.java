@@ -29,6 +29,7 @@ public class Group {
 
     @CreationTimestamp
     @Column(name = "\"createdAt\"", updatable = false, nullable = false)
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     @ManyToOne
@@ -36,6 +37,7 @@ public class Group {
     private User createdBy;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<GroupMember> members;
 
 }

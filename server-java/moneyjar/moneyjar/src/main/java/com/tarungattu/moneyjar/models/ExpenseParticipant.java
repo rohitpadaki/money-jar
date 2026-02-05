@@ -23,6 +23,7 @@ public class ExpenseParticipant {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "\"expenseId\"")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Expense expense;
 
     @ManyToOne(optional = false)

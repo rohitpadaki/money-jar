@@ -30,6 +30,7 @@ public class Category {
     private com.tarungattu.moneyjar.enums.TransactionType type;
 
     @OneToMany(mappedBy = "category")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Transaction> transactions;
 
 }

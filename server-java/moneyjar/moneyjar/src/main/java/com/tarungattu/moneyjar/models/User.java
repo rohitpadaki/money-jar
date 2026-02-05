@@ -33,12 +33,15 @@ public class User {
 
     // Relationships
     @OneToMany(mappedBy = "user")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Transaction> transactions;
 
     @OneToMany(mappedBy = "createdBy")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Group> createdGroups;
 
     @OneToMany(mappedBy = "user")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<GroupMember> groupMemberships;
 
 }
